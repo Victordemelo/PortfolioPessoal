@@ -3,46 +3,56 @@
 @custom-variant claro (&:where(.claro, .claro *));
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --color-fundo: var(--fundo);
-  --color-superficie: var(--superficie);
-  --color-superficie-2: var(--superficie-2);
-  --color-borda: var(--borda);
+  --color-placa: var(--placa);
+  --color-placa-2: var(--placa-2);
+  --color-linha: var(--linha);
   --color-texto: var(--texto);
   --color-suave: var(--suave);
-  --color-destaque: var(--destaque);
-  --color-destaque-2: var(--destaque-2);
+  --color-cobre: var(--cobre);
+  --color-cobre-claro: var(--cobre-claro);
+  --color-led: var(--led);
+  --color-alerta: var(--alerta);
 }
 
+/* Escuro: placa de fibra de vidro com trilhas de cobre */
 :root {
-  --fundo: #0b0f14;
-  --superficie: #111820;
-  --superficie-2: #16202b;
-  --borda: #1f2b38;
-  --texto: #e6edf3;
-  --suave: #8b98a8;
-  --destaque: #34d399;
-  --destaque-2: #22d3ee;
+  --fundo: #0d0c0a;
+  --placa: #151310;
+  --placa-2: #1d1a16;
+  --linha: #2c2721;
+  --texto: #efe8dc;
+  --suave: #9d9282;
+  --cobre: #e3813b;
+  --cobre-claro: #ffb67a;
+  --led: #8be07f;
+  --alerta: #ff6b5b;
+  --traco: #2a231b;
   color-scheme: dark;
 }
 
+/* Claro: papel de desenho técnico */
 :root.claro {
-  --fundo: #f7f9fb;
-  --superficie: #ffffff;
-  --superficie-2: #eef2f6;
-  --borda: #dde3ea;
-  --texto: #0f172a;
-  --suave: #5b6778;
-  --destaque: #059669;
-  --destaque-2: #0891b2;
+  --fundo: #ede7da;
+  --placa: #f7f3ea;
+  --placa-2: #e8e1d2;
+  --linha: #d3c9b5;
+  --texto: #1d1914;
+  --suave: #6d6355;
+  --cobre: #b85516;
+  --cobre-claro: #d9772f;
+  --led: #2f8f3e;
+  --alerta: #c9362b;
+  --traco: #d9cfbc;
   color-scheme: light;
 }
 
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -50,36 +60,179 @@ body {
   color: var(--texto);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--destaque) 35%, transparent);
+  background: var(--cobre);
+  color: var(--fundo);
 }
 
-.texto-gradiente {
-  background: linear-gradient(90deg, var(--destaque), var(--destaque-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+:focus-visible {
+  outline: 2px solid var(--cobre);
+  outline-offset: 3px;
 }
 
-/* Grade sutil ao fundo do hero */
-.grade-fundo {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--borda) 60%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--borda) 60%, transparent) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 70%);
+/* Granulado por cima de tudo, para tirar o aspecto "liso de template" */
+.granulado {
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+:root.claro .granulado {
+  opacity: 0.12;
+  mix-blend-mode: multiply;
+}
+
+/* Brilho de cobre que segue o cursor dentro de cada cartão */
+.cartao {
+  --mx: 50%;
+  --my: 50%;
+}
+.cartao::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--cobre) 13%, transparent), transparent 60%);
+}
+.cartao:hover::before {
+  opacity: 1;
+}
+
+/* Marcas de canto, como num painel parafusado */
+.cantos > i {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--linha);
+  transition: border-color 0.25s;
+}
+.cantos > i:nth-child(1) { top: 7px; left: 7px; border-top: 1px solid; border-left: 1px solid; }
+.cantos > i:nth-child(2) { top: 7px; right: 7px; border-top: 1px solid; border-right: 1px solid; }
+.cantos > i:nth-child(3) { bottom: 7px; left: 7px; border-bottom: 1px solid; border-left: 1px solid; }
+.cantos > i:nth-child(4) { bottom: 7px; right: 7px; border-bottom: 1px solid; border-right: 1px solid; }
+.cartao:hover .cantos > i {
+  border-color: var(--cobre);
+}
+
+/* Foto em duotom cobre; ganha cor no hover */
+.duotom {
+  position: relative;
+  isolation: isolate;
+}
+.duotom img {
+  filter: grayscale(1) contrast(1.15) brightness(0.95);
+  transition: filter 0.6s;
+}
+.duotom::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cobre);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+:root.claro .duotom::after {
+  mix-blend-mode: color;
+  opacity: 0.6;
+}
+.duotom:hover img,
+.cartao:hover .duotom img {
+  filter: grayscale(0) contrast(1) brightness(1);
+}
+.duotom:hover::after,
+.cartao:hover .duotom::after {
+  opacity: 0;
+}
+
+/* Faixa rolante da stack */
+@keyframes rolar {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.faixa {
+  animation: rolar var(--dur, 40s) linear infinite;
+}
+.faixa-reversa {
+  animation-direction: reverse;
+}
+.cartao:hover .faixa {
+  animation-play-state: paused;
+}
+
+@keyframes piscar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+.led-pisca {
+  animation: piscar 1.6s ease-in-out infinite;
+}
+
+.rolagem-fina {
+  scrollbar-width: thin;
+  scrollbar-color: var(--linha) transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Painel em grade (bento) ─────────────────────────────── */
+.bento {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'eu'
+    'foto'
+    'atividade'
+    'projetos'
+    'hardware'
+    'stack'
+    'trajetoria'
+    'contato';
+}
+.bento > #cartao-foto {
+  aspect-ratio: 4 / 3;
+}
+@media (min-width: 768px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      'eu eu'
+      'foto atividade'
+      'projetos projetos'
+      'hardware stack'
+      'hardware trajetoria'
+      'contato contato';
+  }
+  .bento > #cartao-foto {
+    aspect-ratio: auto;
+  }
+}
+@media (min-width: 1100px) {
+  .bento {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-areas:
+      'eu eu eu eu foto foto'
+      'projetos projetos projetos projetos atividade atividade'
+      'hardware hardware stack stack stack stack'
+      'hardware hardware trajetoria trajetoria contato contato';
   }
 }

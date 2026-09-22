@@ -1,4 +1,7 @@
-export type Categoria = 'profissional' | 'pessoal' | 'academico' | 'hardware'
+export type Categoria = 'profissional' | 'pessoal' | 'academico'
+
+/** Mês no formato AAAA-MM */
+type Mes = `${number}-${string}`
 
 export type Projeto = {
   id: string
@@ -7,8 +10,9 @@ export type Projeto = {
   destaques: string[]
   stack: string[]
   categoria: Categoria
-  /** Aparece no topo, com card maior */
-  destaque?: boolean
+  /** Período de execução. `fim: 'atual'` = em andamento; sem `fim` = um mês só */
+  inicio: Mes
+  fim?: Mes | 'atual'
   /** Site em produção */
   noAr?: string
   /** Repositório público */
@@ -18,114 +22,56 @@ export type Projeto = {
   imagem?: string
   /** Contexto curto: empresa, disciplina, equipe */
   contexto?: string
+  /** Aparece com selo de hardware */
+  hardware?: boolean
 }
 
-export const categorias: { id: Categoria | 'todos'; rotulo: string }[] = [
-  { id: 'todos', rotulo: 'Todos' },
-  { id: 'profissional', rotulo: 'Profissional' },
-  { id: 'pessoal', rotulo: 'Pessoal' },
-  { id: 'academico', rotulo: 'Acadêmico' },
-  { id: 'hardware', rotulo: 'Hardware' },
+export const grupos: { id: Categoria; titulo: string; descricao: string }[] = [
+  {
+    id: 'profissional',
+    titulo: 'Profissional',
+    descricao: 'Sistemas que desenvolvi no trabalho. O código é privado, então descrevo o que cada um faz.',
+  },
+  {
+    id: 'pessoal',
+    titulo: 'Pessoal',
+    descricao: 'Projetos meus, feitos para resolver problemas que eu mesmo tinha.',
+  },
+  {
+    id: 'academico',
+    titulo: 'Acadêmico',
+    descricao: 'Trabalhos da graduação em Engenharia da Computação na Unisul.',
+  },
 ]
 
 const GH = 'https://github.com/Victordemelo'
 
 export const projetos: Projeto[] = [
+  // ─── Profissional ───────────────────────────────────────────
   {
-    id: 'painel-shield',
-    nome: 'Painel Shield',
-    contexto: 'JW Soluções Digitais',
+    id: 'megatruck',
+    nome: 'MegaTruck',
+    contexto: 'ERP de frota',
     categoria: 'profissional',
-    destaque: true,
+    inicio: '2026-03',
+    fim: '2026-09',
     resumo:
-      'Painel de licenciamento e cobrança para um ERP desktop. O ERP instalado na loja pede uma licença assinada ao painel, que decide quem trabalha, quantas máquinas cabem no contrato e quanto o cliente deve.',
+      'ERP de gestão de frota. Cada cliente roda numa instância própria (um subdomínio, uma pasta e um banco), com instalação e atualização padronizadas em VPS.',
     destaques: [
-      'Licenças assinadas com RSA-SHA256, com cota de terminais, módulos e bloqueio',
-      'Régua de cobrança com multa, juros e suspensão automática',
-      'Integração com Asaas, Mercado Pago, PagBank, Pagar.me, Efí, Inter, C6, Cora e outros',
-      'Monitoramento dos terminais e leitura remota de logs do ERP',
-      'Área do cliente com faturas e PIX, e atualização do sistema pela própria tela',
+      'Arquitetura multi-instância, isolando os dados de cada cliente',
+      'Geração de PDF e relatórios',
+      'Processo de deploy documentado passo a passo, em VPS com cPanel',
+      'Mais de 600 commits ao longo do projeto',
     ],
-    stack: ['PHP', 'MariaDB', 'Apache', 'RSA', 'APIs de pagamento'],
-  },
-  {
-    id: 'lojadev-central',
-    nome: 'LojaDev Central',
-    contexto: 'JW Soluções Digitais',
-    categoria: 'profissional',
-    destaque: true,
-    noAr: 'https://painel.lojadev.com.br',
-    extra: { rotulo: 'Painel da revenda', url: 'https://revenda.lojadev.com.br' },
-    resumo:
-      'Sistema unificado da empresa: painel da equipe, painel das revendas e API de licenças, servidos pelo mesmo app Laravel em vários subdomínios.',
-    destaques: [
-      'Roteamento por domínio: cada área em seu subdomínio, uma só base de código',
-      'Modelo de revenda pré-paga com carteira, débito diário e carência automática',
-      'Licença por terminal, identificado por fingerprint SHA-256',
-      'Suíte com centenas de testes automatizados',
-    ],
-    stack: ['Laravel', 'PHP', 'MySQL', 'Docker', 'Pix'],
-  },
-  {
-    id: 'stabilmoney',
-    nome: 'StabilMoney',
-    categoria: 'pessoal',
-    destaque: true,
-    repo: `${GH}/StabilMoney`,
-    resumo:
-      'App de finanças pessoais para a família toda: receitas, despesas, cartões, contas fixas, metas e investimentos. Separa o dinheiro que está na conta do que já está comprometido, e não deixa gastar o que não existe.',
-    destaques: [
-      'Modelo de saldo em "bolsos": bruto, reservado, disponível e cheque especial',
-      'Conta-família com dependentes que têm login próprio',
-      'PWA instalável com lançamento offline (fila + Background Sync)',
-      '700 testes e 2.744 asserções, rodando no CI a cada push',
-      'Senhas em argon2id, backup e restore com rotação',
-    ],
-    stack: ['Laravel 12', 'PHP 8.4', 'MySQL', 'Tailwind 4', 'PWA', 'Docker'],
-  },
-  {
-    id: 'remote-wake',
-    nome: 'Remote Wake',
-    categoria: 'pessoal',
-    destaque: true,
-    repo: `${GH}/wake-on-lan`,
-    resumo:
-      'Plataforma open source e self-hosted para ligar computadores remotamente por Wake-on-LAN, dentro e fora de casa, com PWA instalável e API autenticada.',
-    destaques: [
-      'Multiusuário: cada conta cadastra as próprias máquinas',
-      'Wake-on-LAN na rede local e Wake-on-WAN por IP público ou DDNS',
-      'Roadmap com gateway Tailscale (para CGNAT) e agente para desligar e reiniciar',
-      'Sobe inteiro com Docker Compose',
-    ],
-    stack: ['ASP.NET Core 10', 'C#', 'React', 'TypeScript', 'PostgreSQL', 'JWT', 'Docker'],
-  },
-  {
-    id: 'lojadev-site',
-    nome: 'Site LojaDev',
-    contexto: 'JW Soluções Digitais',
-    categoria: 'profissional',
-    noAr: 'https://lojadev.com.br',
-    resumo:
-      'Site institucional da LojaDev, com SEO básico (sitemap, robots) e widget de suporte.',
-    destaques: ['Página estática e rápida', 'Sitemap e robots para indexação', 'Widget de suporte integrado'],
-    stack: ['HTML', 'CSS', 'JavaScript'],
-  },
-  {
-    id: 'membros-jw',
-    nome: 'Área de Membros',
-    contexto: 'JW Soluções Digitais',
-    categoria: 'profissional',
-    noAr: 'https://membros.lojadev.com.br',
-    resumo:
-      'Sistema de membros e assinaturas da JW Soluções Digitais: cadastro, assinatura recorrente e controle de acesso ao conteúdo.',
-    destaques: ['Assinaturas com vencimento e renovação', 'Validação de dados do cliente', 'Deploy versionado por git'],
-    stack: ['PHP', 'MySQL', 'JavaScript'],
+    stack: ['Laravel 12', 'PHP 8.3', 'MySQL', 'Node'],
   },
   {
     id: 'portal-contador',
     nome: 'Portal do Contador',
-    contexto: 'JW Soluções Digitais',
+    contexto: 'Documentos fiscais',
     categoria: 'profissional',
+    inicio: '2026-06',
+    fim: '2026-08',
     resumo:
       'Gestão de documentos fiscais (NF-e, NFC-e, NFS-e, CT-e, MDF-e). Um agente desktop lê os XMLs na máquina do cliente e envia para o portal, onde o contador consulta tudo num lugar só.',
     destaques: [
@@ -135,40 +81,88 @@ export const projetos: Projeto[] = [
     ],
     stack: ['Laravel 11', 'PHP', 'Agente Windows', 'XML fiscal'],
   },
+
+  // ─── Pessoal ────────────────────────────────────────────────
   {
-    id: 'megatruck',
-    nome: 'MegaTruck',
-    contexto: 'JW Soluções Digitais',
-    categoria: 'profissional',
+    id: 'remote-wake',
+    nome: 'Remote Wake',
+    contexto: 'Open source',
+    categoria: 'pessoal',
+    inicio: '2026-09',
+    fim: 'atual',
+    repo: `${GH}/wake-on-lan`,
     resumo:
-      'ERP de gestão de frota. Cada cliente roda numa instância própria (um subdomínio, uma pasta e um banco), com instalação e atualização padronizadas em VPS.',
+      'Plataforma self-hosted para ligar computadores remotamente por Wake-on-LAN, dentro e fora de casa, com PWA instalável e API autenticada.',
     destaques: [
-      'Arquitetura multi-instância, isolando os dados de cada cliente',
-      'Geração de PDF e relatórios',
-      'Passo a passo de deploy em VPS com cPanel, sem Docker no servidor',
+      'Multiusuário: cada conta cadastra as próprias máquinas',
+      'Wake-on-LAN na rede local e Wake-on-WAN por IP público ou DDNS',
+      'Roadmap com gateway Tailscale (para CGNAT) e agente para desligar e reiniciar',
+      'Sobe inteiro com Docker Compose',
     ],
-    stack: ['Laravel 12', 'PHP 8.3', 'MySQL', 'Node'],
+    stack: ['ASP.NET Core 10', 'C#', 'React', 'TypeScript', 'PostgreSQL', 'JWT', 'Docker'],
   },
   {
     id: 'fluxo-agentes',
     nome: 'Fluxo de Agentes',
+    contexto: 'Ferramenta de IA',
     categoria: 'pessoal',
+    inicio: '2026-09',
     resumo:
-      'Uma pasta que se coloca em qualquer projeto para rodar um time de IAs pelo terminal: arquiteto planeja, você aprova, executor implementa, checks sem IA validam e um revisor diferente dá o veredito.',
+      'Uma pasta que se coloca em qualquer projeto para rodar um time de IAs pelo terminal: o arquiteto planeja, você aprova, o executor implementa, checks sem IA validam e um revisor diferente dá o veredito.',
     destaques: [
       'Fallback automático entre Claude, Codex, Copilot e outros quando um bate limite',
       'Modelo forte planeja e modelo barato executa, para economizar cota',
-      'Revisor usa IA diferente da que escreveu o código',
+      'O revisor usa uma IA diferente da que escreveu o código',
       'Funciona no Windows e no macOS',
     ],
     stack: ['Node.js', 'CLI', 'Claude', 'Codex', 'Automação'],
   },
   {
+    id: 'stabilmoney',
+    nome: 'StabilMoney',
+    contexto: 'Finanças pessoais',
+    categoria: 'pessoal',
+    inicio: '2026-03',
+    fim: 'atual',
+    repo: `${GH}/StabilMoney`,
+    resumo:
+      'App de finanças para a família toda: receitas, despesas, cartões, contas fixas, metas e investimentos. Separa o dinheiro que está na conta do que já está comprometido, e não deixa gastar o que não existe.',
+    destaques: [
+      'Saldo em "bolsos": bruto, reservado, disponível e cheque especial',
+      'Conta-família com dependentes que têm login próprio',
+      'PWA instalável com lançamento offline (fila + Background Sync)',
+      '700 testes e 2.744 asserções, rodando no CI a cada push',
+      'Senhas em argon2id, backup e restore com rotação',
+    ],
+    stack: ['Laravel 12', 'PHP 8.4', 'MySQL', 'Tailwind 4', 'PWA', 'Docker'],
+  },
+
+  // ─── Acadêmico ──────────────────────────────────────────────
+  {
+    id: 'bigdata',
+    nome: 'BigData Analytics',
+    contexto: 'Unisul',
+    categoria: 'academico',
+    inicio: '2026-03',
+    repo: `${GH}/dataAnalysisProjects`,
+    resumo:
+      'Dashboard para acompanhar engajamento e desempenho de alunos, com métricas consolidadas, gráficos interativos e relatórios que abrem sem recarregar a página.',
+    destaques: [
+      'Tratamento dos dados em CSV com Pandas e NumPy',
+      'Quatro gráficos interativos com Plotly Express',
+      'Relatórios via API JSON interna, exibidos em modal',
+      'Ambiente em Docker',
+    ],
+    stack: ['Python', 'Django', 'Pandas', 'Plotly', 'Docker'],
+  },
+  {
     id: 'arduino',
     nome: 'Estacionamento Inteligente',
     contexto: 'Sistemas Digitais · Unisul',
-    categoria: 'hardware',
-    destaque: true,
+    categoria: 'academico',
+    hardware: true,
+    inicio: '2025-05',
+    fim: '2025-09',
     repo: `${GH}/Estacionamento_Inteligente_Arduino`,
     extra: {
       rotulo: 'Simulação no Tinkercad',
@@ -183,31 +177,16 @@ export const projetos: Projeto[] = [
       'Cancela com servomotor controlado por PWM',
       'LEDs RGB indicando vagas livres e ocupadas em tempo real',
       'Fonte própria convertendo 220 V AC para 13,2 V DC',
-      'Projeto em equipe com Davi Jordani Ramos, Isaque Fabro e Pedro Brunhara',
+      'Em equipe com Davi Jordani Ramos, Isaque Fabro e Pedro Brunhara',
     ],
     stack: ['Arduino UNO', 'C++', 'HC-SR04', 'Servomotor', 'PWM', 'Eletrônica'],
-  },
-  {
-    id: 'bigdata',
-    nome: 'BigData Analytics Dashboard',
-    contexto: 'Unisul',
-    categoria: 'academico',
-    repo: `${GH}/dataAnalysisProjects`,
-    resumo:
-      'Dashboard para acompanhar engajamento e desempenho de alunos, com métricas consolidadas, gráficos interativos e relatórios que abrem sem recarregar a página.',
-    destaques: [
-      'Tratamento dos dados em CSV com Pandas e NumPy',
-      'Quatro gráficos interativos com Plotly Express',
-      'Relatórios via API JSON interna, exibidos em modal',
-      'Ambiente em Docker',
-    ],
-    stack: ['Python', 'Django', 'Pandas', 'Plotly', 'Docker'],
   },
   {
     id: 'emprestimo-a3',
     nome: 'Gerenciador de Empréstimos',
     contexto: 'Avaliação A3 · Unisul',
     categoria: 'academico',
+    inicio: '2024-11',
     repo: `${GH}/gerenciador_emprestimo_A3`,
     resumo:
       'Aplicação desktop para controlar empréstimos de ferramentas entre amigos: cadastros, empréstimos, devoluções e relatórios.',
@@ -219,3 +198,15 @@ export const projetos: Projeto[] = [
     stack: ['Java', 'MySQL', 'POO'],
   },
 ]
+
+/** Mais recente primeiro: em andamento, depois pela data de fim e de início */
+function chave(p: Projeto) {
+  const fim = p.fim === 'atual' ? '9999-99' : (p.fim ?? p.inicio)
+  return `${fim}|${p.inicio}`
+}
+
+export function projetosDoGrupo(g: Categoria) {
+  return projetos.filter((p) => p.categoria === g).sort((a, b) => chave(b).localeCompare(chave(a)))
+}
+
+export const projetosOrdenados = grupos.flatMap((g) => projetosDoGrupo(g.id))

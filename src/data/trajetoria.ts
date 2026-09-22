@@ -15,11 +15,11 @@ export const trajetoria: Etapa[] = [
   {
     tipo: 'trabalho',
     titulo: 'Desenvolvedor Full Stack',
-    lugar: 'JW Soluções Digitais · LojaDev',
+    lugar: 'JW Soluções Digitais',
     periodo: '',
     descricao:
-      'Desenvolvimento dos sistemas da empresa: painel de licenças e cobrança do ERP, sistema unificado de equipe e revendas, portal de documentos fiscais, ERP de frota e área de membros. Da modelagem do banco ao deploy.',
-    tags: ['Laravel', 'PHP', 'MySQL', 'Docker', 'Integrações de pagamento'],
+      'Desenvolvimento de sistemas web para clientes e para a operação da empresa, como ERP de frota e gestão de documentos fiscais. Da modelagem do banco ao deploy.',
+    tags: ['Laravel', 'PHP', 'MySQL', 'Docker', 'Integrações'],
   },
   {
     tipo: 'formacao',

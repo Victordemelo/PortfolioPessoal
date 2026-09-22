@@ -8,12 +8,14 @@ Todo o texto fica em `src/data`. Os componentes só leem esses arquivos.
 
 | Arquivo | O que tem |
 |---|---|
-| `src/data/perfil.ts` | nome, título, texto "sobre", contatos e números |
-| `src/data/projetos.ts` | os cards de projeto (link do site, repositório, stack, destaques) |
+| `src/data/perfil.ts` | nome, frase, texto "sobre" e contatos |
+| `src/data/projetos.ts` | projetos: categoria, período de execução (`inicio`/`fim`), stack, destaques e links |
 | `src/data/trajetoria.ts` | experiência e formação |
 | `src/data/stack.ts` | ferramentas agrupadas |
 
-Para colocar um projeto em evidência, marque `destaque: true`. Com `imagem`, o card ocupa a largura toda.
+Os projetos aparecem agrupados por categoria e ordenados pela data (`fim: 'atual'` = em andamento, vai para o topo). Sem `imagem`, o projeto ganha uma capa gerada automaticamente.
+
+A atividade do GitHub é buscada no navegador de quem visita. Para os commits de repositórios privados entrarem na contagem, ligue **Private contributions** em github.com → seu perfil → Contribution settings.
 
 ## Rodar localmente
 
