@@ -4,9 +4,9 @@
 
 **Funcionais**
 - Página única em coluna, no estilo "caderno técnico": capa com placa de circuito isométrica (Fig. 1), perfil, informações, redes, gráfico de contribuições ao vivo (Fig. 2), sobre, projetos, stack, trajetória e contato.
-- Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (), com anterior/próximo.
+- Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`#/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
-- Links diretos para seções () e botão voltar funcionando.
+- Links diretos para seções (`#/stack`) e botão voltar funcionando.
 - Tema claro e escuro; funciona no celular.
 
 **Não funcionais**
@@ -41,14 +41,14 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Peça | Arquivo | Papel |
 |---|---|---|
-| Linhas-guia | , ,  no CSS | A coluna central (max-w-3xl) tem bordas laterais; as linhas horizontais e as faixas hachuradas são pseudo-elementos de 200vw, então atravessam a tela sem criar rolagem lateral ( no body). |
-| Capa isométrica |  | Placa, chip, conector e trilhas descritos em coordenadas (x, y, z) e projetados em isométrico. Pulsos de sinal com  ao longo das trilhas; somem com . |
-| Contribuições | ,  | Calendário do último ano em SVG, escala de cinza de 5 níveis, dica no hover; no celular começa rolado nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
-| Página inicial |  | Todas as seções, na ordem. |
-| Página de projeto |  | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
-| Rotas |  | Hash ( ou ): funciona em qualquer servidor estático. |
-| Capas geradas |  | Trecho de placa em SVG gerado do id do projeto, para quem não tem foto. |
-| Ícones da stack |  | Caminhos SVG do pacote simple-icons, em currentColor (monocromático nos dois temas). |
+| Linhas-guia | `.linha-cima`, `.linha-baixo`, `.linha-direita`, `.listra` no CSS | A coluna central (max-w-3xl) tem bordas laterais; as linhas horizontais e as faixas hachuradas são pseudo-elementos de 200vw, então atravessam a tela sem criar rolagem lateral (`overflow-x: clip` no body). |
+| Capa isométrica | `components/CapaIsometrica.tsx` | Placa, chip, conector e trilhas descritos em coordenadas (x, y, z) e projetados em isométrico. Pulsos de sinal com `<animateMotion>` ao longo das trilhas; somem com `prefers-reduced-motion`. |
+| Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG, escala de cinza de 5 níveis, dica no hover; no celular começa rolado nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
+| Página inicial | `components/Home.tsx` | Todas as seções, na ordem. |
+| Página de projeto | `components/PaginaProjeto.tsx` | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
+| Rotas | `lib/rota.ts` | Hash (`#/secao` ou `#/projetos/<id>`): funciona em qualquer servidor estático. |
+| Capas geradas | `components/Capa.tsx` | Trecho de placa em SVG gerado do id do projeto, para quem não tem foto. |
+| Ícones da stack | `data/stack.ts` | Caminhos SVG do pacote simple-icons, em currentColor (monocromático nos dois temas). |
 
 ## Decisões e trade-offs
 
@@ -66,7 +66,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 - Sem formulário e sem backend: o contato é `mailto:`, então não há endpoint para abusar.
 - Cabeçalhos no Caddy: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`.
-- Projetos da empresa aparecem só em nível de produto, sem link para código privado, painel administrativo ou detalhe interno.
+- Projetos da empresa não entram no portfólio; a categoria "Profissional" só aparece quando houver projeto nela.
 
 ## O que revisitar se crescer
 
