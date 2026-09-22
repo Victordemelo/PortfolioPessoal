@@ -26,7 +26,7 @@ export type Projeto = {
   hardware?: boolean
 }
 
-export const grupos: { id: Categoria; titulo: string; descricao: string }[] = [
+const todosGrupos: { id: Categoria; titulo: string; descricao: string }[] = [
   {
     id: 'profissional',
     titulo: 'Profissional',
@@ -47,41 +47,6 @@ export const grupos: { id: Categoria; titulo: string; descricao: string }[] = [
 const GH = 'https://github.com/Victordemelo'
 
 export const projetos: Projeto[] = [
-  // ─── Profissional ───────────────────────────────────────────
-  {
-    id: 'megatruck',
-    nome: 'MegaTruck',
-    contexto: 'ERP de frota',
-    categoria: 'profissional',
-    inicio: '2026-03',
-    fim: '2026-09',
-    resumo:
-      'ERP de gestão de frota. Cada cliente roda numa instância própria (um subdomínio, uma pasta e um banco), com instalação e atualização padronizadas em VPS.',
-    destaques: [
-      'Arquitetura multi-instância, isolando os dados de cada cliente',
-      'Geração de PDF e relatórios',
-      'Processo de deploy documentado passo a passo, em VPS com cPanel',
-      'Mais de 600 commits ao longo do projeto',
-    ],
-    stack: ['Laravel 12', 'PHP 8.3', 'MySQL', 'Node'],
-  },
-  {
-    id: 'portal-contador',
-    nome: 'Portal do Contador',
-    contexto: 'Documentos fiscais',
-    categoria: 'profissional',
-    inicio: '2026-06',
-    fim: '2026-08',
-    resumo:
-      'Gestão de documentos fiscais (NF-e, NFC-e, NFS-e, CT-e, MDF-e). Um agente desktop lê os XMLs na máquina do cliente e envia para o portal, onde o contador consulta tudo num lugar só.',
-    destaques: [
-      'Agente Windows que sincroniza os XMLs a cada 30 segundos',
-      'API autenticada por token para recebimento dos documentos',
-      'Portal web para o escritório de contabilidade',
-    ],
-    stack: ['Laravel 11', 'PHP', 'Agente Windows', 'XML fiscal'],
-  },
-
   // ─── Pessoal ────────────────────────────────────────────────
   {
     id: 'remote-wake',
@@ -198,6 +163,9 @@ export const projetos: Projeto[] = [
     stack: ['Java', 'MySQL', 'POO'],
   },
 ]
+
+/** Só as categorias que têm projeto aparecem (título, filtro e contagem) */
+export const grupos = todosGrupos.filter((g) => projetos.some((p) => p.categoria === g.id))
 
 /** Mais recente primeiro: em andamento, depois pela data de fim e de início */
 function chave(p: Projeto) {

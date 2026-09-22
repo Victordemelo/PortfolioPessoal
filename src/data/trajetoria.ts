@@ -18,7 +18,7 @@ export const trajetoria: Etapa[] = [
     lugar: 'JW Soluções Digitais',
     periodo: '',
     descricao:
-      'Desenvolvimento de sistemas web para clientes e para a operação da empresa, como ERP de frota e gestão de documentos fiscais. Da modelagem do banco ao deploy.',
+      'Desenvolvimento de sistemas web para clientes e para a operação da empresa, da modelagem do banco ao deploy.',
     tags: ['Laravel', 'PHP', 'MySQL', 'Docker', 'Integrações'],
   },
   {
