@@ -3,7 +3,7 @@
 ## Requisitos
 
 **Funcionais**
-- Página única em coluna, no estilo "caderno técnico": capa com placa de circuito isométrica (Fig. 1), perfil, informações, redes, gráfico de contribuições ao vivo (Fig. 2), sobre, projetos, stack, trajetória e contato.
+- Página no formato de ficha técnica (datasheet) de componente: no desktop, barra lateral fixa com perfil, "características" e índice numerado que acompanha a rolagem; à direita, as seções 01 Sobre, 02 Atividade (Figura 1, ao vivo), 03 Projetos, 04 Pinagem (Figura 2: a stack como um CI DIP-18), 05 Trajetória e 06 Contato. No celular, tudo vira uma coluna e a pinagem vira tabela de pinos.
 - Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`#/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
 - Links diretos para seções (`#/stack`) e botão voltar funcionando.
@@ -41,10 +41,11 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Peça | Arquivo | Papel |
 |---|---|---|
-| Linhas-guia | `.linha-cima`, `.linha-baixo`, `.linha-direita`, `.listra` no CSS | A coluna central (max-w-3xl) tem bordas laterais; as linhas horizontais e as faixas hachuradas são pseudo-elementos de 200vw, então atravessam a tela sem criar rolagem lateral (`overflow-x: clip` no body). |
-| Capa isométrica | `components/CapaIsometrica.tsx` | Placa, chip, conector e trilhas descritos em coordenadas (x, y, z) e projetados em isométrico. Pulsos de sinal com `<animateMotion>` ao longo das trilhas; somem com `prefers-reduced-motion`. |
-| Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG, escala de cinza de 5 níveis, dica no hover; no celular começa rolado nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
-| Página inicial | `components/Home.tsx` | Todas as seções, na ordem. |
+| Barra lateral | `components/Lateral.tsx` | Perfil, tabela "Características" (status, local, hora com fuso relativo ao visitante, formação, e-mail), índice numerado e redes. Fixa (`sticky`) no desktop; no celular vira o topo da página. |
+| Índice ativo | `useSecaoAtiva` em `App.tsx` | `IntersectionObserver` nas seções para acender o item do índice que está na tela. |
+| Pinagem | `components/Pinagem.tsx` | A stack como um CI DIP-18 em SVG: pinos 1–9 descem à esquerda, 10–18 sobem à direita, 9 = GND e 18 = VCC. Hover ou foco no pino mostra a função e em quantos projetos a tecnologia aparece. No celular, tabela de pinos. |
+| Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG que escala com a coluna, 5 níveis de âmbar, dica no hover; no celular rola e começa nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
+| Página inicial | `components/Inicio.tsx` | As seis seções numeradas, na ordem. |
 | Página de projeto | `components/PaginaProjeto.tsx` | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
 | Rotas | `lib/rota.ts` | Hash (`#/secao` ou `#/projetos/<id>`): funciona em qualquer servidor estático. |
 | Capas geradas | `components/Capa.tsx` | Trecho de placa em SVG gerado do id do projeto, para quem não tem foto. |
@@ -59,7 +60,8 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | **Projetos curados à mão** | A maioria dos projetos relevantes é privada; a curadoria conta melhor a história | Repositório novo não aparece sozinho |
 | **Atividade via API de terceiros** (jogruber) | É o único jeito de ler o calendário de contribuições do navegador sem token | Se o serviço cair, o cartão mostra "não consegui falar com o GitHub" e o resto do site segue normal |
 | **Commits privados só como número** | O calendário conta contribuições privadas (com a opção ligada no perfil) sem expor nome de repositório | Não dá para dizer em qual projeto privado foi o commit |
-| **SVG isométrico** em vez de canvas ou WebGL | Traço nítido em qualquer resolução, segue o tema via variáveis CSS, sem dependência | Cena fixa, sem interação com o cursor |
+| **SVG desenhado à mão** (pinagem, calendário) em vez de biblioteca de gráficos | Traço nítido em qualquer resolução, segue o tema via variáveis CSS, sem dependência | Mais código próprio para manter |
+| **Barra lateral fixa** no desktop | Ocupa a largura da tela e deixa perfil e navegação sempre à mão | Em telas entre 1024 e 1200 px a coluna de conteúdo fica mais estreita |
 | **Caddy** em vez de Nginx | HTTPS automático sem certbot; config curta | — |
 
 ## Segurança e privacidade

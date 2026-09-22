@@ -3,7 +3,7 @@ import { perfil } from '../data/perfil'
 import { sequenciaAtual, useAtividade, type Dia } from '../lib/atividade'
 import { haQuanto } from '../lib/datas'
 
-// Calendário de contribuições em escala de cinza (uma série, um matiz).
+// Calendário de contribuições numa escala de um só matiz (âmbar), uma série.
 // Nível 0 fica quase no fundo para "sem commit" não parecer dado.
 const NIVEIS = ['var(--n0)', 'var(--n1)', 'var(--n2)', 'var(--n3)', 'var(--n4)']
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
@@ -38,7 +38,7 @@ function Grade({ dias }: { dias: Dia[] }) {
   return (
     <div className="relative" onPointerLeave={() => setDica(null)}>
       <div ref={rolagem} className="sem-barra overflow-x-auto">
-        <svg width={largura} height={altura + 18} className="mx-auto block" role="img" aria-label={`Calendário de contribuições: ${plural(dias.reduce((a, d) => a + d.qtd, 0))}`}>
+        <svg viewBox={`0 0 ${largura} ${altura + 18}`} className="block w-full min-w-[560px]" role="img" aria-label={`Calendário de contribuições: ${plural(dias.reduce((a, d) => a + d.qtd, 0))}`}>
           {meses.map((m) => (
             <text key={m.x} x={m.x} y={10} className="fill-apagado font-sans text-[11px]">
               {m.texto}
@@ -91,40 +91,50 @@ export function Contribuicoes() {
 
   const ultimo = dados.pushes[0]
   const ativo = dados.dias.slice(-2).some((d) => d.qtd > 0)
+  const recorde = dados.dias.reduce((a, d) => (d.qtd > a.qtd ? d : a), dados.dias[0])
+  const medidas = [
+    { k: 'dias com commit', v: String(dados.dias.filter((d) => d.qtd > 0).length) },
+    { k: 'sequência atual', v: `${sequenciaAtual(dados.dias)} d` },
+    { k: 'recorde num dia', v: String(recorde.qtd) },
+    { k: 'último commit', v: ativo ? (dados.dias.at(-1)!.qtd > 0 ? 'hoje' : 'ontem') : ultimo ? haQuanto(ultimo.quando) : '—', vivo: ativo },
+  ]
 
   return (
-    <div>
-      <Grade dias={dados.dias} />
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm">
-        <p className="text-suave">
-          <span className="text-apagado">Fig. 2.</span> {plural(dados.total)}, {fmtCurto(dados.dias[0].data)} – {fmtCurto(dados.dias.at(-1)!.data)}. Fonte:{' '}
-          <a href={perfil.contato.github} target="_blank" rel="noreferrer" className="text-texto underline decoration-linha underline-offset-4 hover:decoration-texto">
-            GitHub
-          </a>
-          .
-        </p>
-        <div className="flex items-center gap-1 text-xs text-apagado">
-          Menos
+    <figure>
+      <div className="rounded-lg border border-linha bg-superficie p-4">
+        <Grade dias={dados.dias} />
+        <div className="mt-3 flex justify-end gap-1 text-[11px] text-apagado">
+          menos
           {NIVEIS.map((n) => (
             <span key={n} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: n }} />
           ))}
-          Mais
+          mais
         </div>
       </div>
-      <p className="mt-2 flex flex-wrap items-center gap-x-2 font-mono text-xs text-apagado">
-        <span className={`h-1.5 w-1.5 rounded-full ${ativo ? 'pisca bg-vivo' : 'bg-apagado'}`} />
-        <span>{ativo ? 'commitando agora' : 'ao vivo'}</span>
-        <span>//</span>
-        <span>sequência de {sequenciaAtual(dados.dias)} d</span>
-        {ultimo && (
-          <>
-            <span>//</span>
-            <span>
-              último push público em <span className="text-suave">{ultimo.repo}</span> {haQuanto(ultimo.quando)}
-            </span>
-          </>
-        )}
-      </p>
-    </div>
+      <figcaption className="mt-3 text-sm text-suave">
+        <span className="font-mono text-xs text-apagado">Figura 1 —</span> {plural(dados.total)} de {fmtCurto(dados.dias[0].data)} a{' '}
+        {fmtCurto(dados.dias.at(-1)!.data)}, lidas do{' '}
+        <a href={perfil.contato.github} target="_blank" rel="noreferrer" className="text-texto underline decoration-linha underline-offset-4 hover:decoration-destaque">
+          GitHub
+        </a>{' '}
+        a cada 5 minutos. Inclui repositórios privados, sem mostrar quais.
+      </figcaption>
+      <dl className="mt-5 grid grid-cols-2 overflow-hidden rounded-lg border border-linha sm:grid-cols-4">
+        {medidas.map((m, i) => (
+          <div key={m.k} className={`flex flex-col-reverse gap-1 border-linha p-3 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b sm:border-b-0' : ''} sm:border-r sm:last:border-r-0`}>
+            <dt className="flex items-center gap-1.5 text-xs text-apagado">
+              {m.vivo && <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" />}
+              {m.k}
+            </dt>
+            <dd className="font-mono text-lg tabular-nums">{m.v}</dd>
+          </div>
+        ))}
+      </dl>
+      {ultimo && (
+        <p className="mt-3 font-mono text-xs text-apagado">
+          último push público: <span className="text-suave">{ultimo.repo}</span>, {haQuanto(ultimo.quando)}
+        </p>
+      )}
+    </figure>
   )
 }

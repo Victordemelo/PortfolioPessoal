@@ -1,22 +1,14 @@
 import { perfil } from '../data/perfil'
-import { Logo } from './Logo'
 
 export function Rodape() {
   return (
-    <footer className="linha-baixo px-4 py-8">
-      <Logo className="mx-auto h-4 text-apagado" />
-      <p className="mt-4 text-center text-sm text-apagado">
-        Feito à mão em Florianópolis por {perfil.nomeCurto}. O{' '}
-        <a
-          href={`${perfil.contato.github}/PortfolioPessoal`}
-          target="_blank"
-          rel="noreferrer"
-          className="text-suave underline decoration-linha underline-offset-4 hover:decoration-suave"
-        >
-          código-fonte
-        </a>{' '}
-        está no GitHub.
+    <footer className="flex flex-col gap-1 border-t border-linha py-8 font-mono text-[11px] text-apagado sm:flex-row sm:justify-between">
+      <p>
+        © {new Date().getFullYear()} {perfil.nome} · VMR-2026 rev. {String(new Date().getMonth() + 1).padStart(2, '0')}
       </p>
+      <a href={`${perfil.contato.github}/PortfolioPessoal`} target="_blank" rel="noreferrer" className="transition hover:text-destaque">
+        código-fonte deste site ↗
+      </a>
     </footer>
   )
 }
