@@ -1,0 +1,18 @@
+services:
+  site:
+    build: .
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    ports:
+      - "${HTTP_PORT:-8088}:80"
+      - "${HTTPS_PORT:-8448}:443"
+      - "${HTTPS_PORT:-8448}:443/udp"
+    volumes:
+      # Guarda os certificados do Let's Encrypt entre um deploy e outro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
