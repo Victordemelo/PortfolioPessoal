@@ -60,18 +60,18 @@ export function Capa({ id, nome, className = '' }: { id: string; nome: string; c
     .toUpperCase()
 
   return (
-    <div className={`relative overflow-hidden bg-placa-2 ${className}`}>
+    <div className={`relative overflow-hidden bg-superficie ${className}`}>
       <svg viewBox={`0 0 ${L} ${A}`} preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-hidden="true">
         <g fill="none" stroke="var(--linha)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           {caminhos.map((d, i) => (
-            <path key={i} d={d} stroke={i % 5 === 0 ? 'var(--cobre)' : undefined} opacity={i % 5 === 0 ? 0.7 : 1} />
+            <path key={i} d={d} stroke={i % 5 === 0 ? 'var(--apagado)' : undefined} />
           ))}
         </g>
         {pads.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="3.5" fill="var(--placa-2)" stroke="var(--linha)" strokeWidth="1.6" />
+          <circle key={i} cx={x} cy={y} r="3.5" fill="var(--superficie)" stroke="var(--linha)" strokeWidth="1.6" />
         ))}
       </svg>
-      <span className="absolute right-4 bottom-1 font-display text-6xl font-extrabold tracking-tighter text-texto/85 select-none">
+      <span className="absolute right-4 bottom-1 font-mono text-5xl font-medium tracking-tighter text-apagado/60 select-none">
         {iniciais}
       </span>
     </div>

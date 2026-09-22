@@ -3,10 +3,10 @@
 ## Requisitos
 
 **Funcionais**
-- Página inicial em painel (bento) com cartões: identificação, projetos, atividade, hardware, stack, trajetória e contato.
-- Cada cartão abre um painel detalhado; projetos agrupados por categoria (profissional, pessoal, acadêmico), com data de execução, em ordem do mais recente ao mais antigo, e cada um com página própria.
-- Atividade do GitHub ao vivo (calendário de contribuições, barras por mês, pushes recentes), para mostrar que o trabalho continua.
-- Links diretos compartilháveis (`#/projetos/stabilmoney`) e botão voltar funcionando.
+- Página única em coluna, no estilo "caderno técnico": capa com placa de circuito isométrica (Fig. 1), perfil, informações, redes, gráfico de contribuições ao vivo (Fig. 2), sobre, projetos, stack, trajetória e contato.
+- Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (), com anterior/próximo.
+- Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
+- Links diretos para seções () e botão voltar funcionando.
 - Tema claro e escuro; funciona no celular.
 
 **Não funcionais**
@@ -41,13 +41,14 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Peça | Arquivo | Papel |
 |---|---|---|
-| Fundo de circuito | `components/FundoCircuito.tsx` | Canvas com trilhas geradas (curvas de 45°), pulsos de sinal e "ponta de prova" no cursor. As trilhas são pré-renderizadas em canvas fora da tela; cada quadro só copia a base, recorta a área acesa em volta do cursor e desenha os pulsos. Pausa com a aba oculta. |
-| Painel (bento) | `components/Bento.tsx`, `.bento` no CSS | Grade com `grid-template-areas`: 6 colunas no desktop, 2 no tablet, 1 no celular. |
-| Cartão | `components/Cartao.tsx` | Moldura com designador de componente (U1, J1, D1…), brilho que segue o cursor e botão que cobre o cartão inteiro. |
-| Gaveta | `components/Gaveta.tsx` | Painel que nasce no retângulo do cartão e cresce até o centro. Anima `top/left/width/height` (não `scale`) para o texto não deformar. Esc fecha, trava a rolagem e devolve o foco. |
-| Rotas | `lib/rota.ts` | Hash (`#/painel/item`): funciona em qualquer servidor estático, sem regra de rewrite. |
-| Atividade | `lib/atividade.ts`, `components/graficos.tsx` | Busca, cache de 5 min no `sessionStorage`, nova busca a cada 5 min com a aba visível. Heatmap em escala de um só matiz (cobre) e barras mensais, ambos com dica no hover. |
-| Capas | `components/Capa.tsx` | Trecho de placa em SVG gerado a partir do id do projeto (sempre o mesmo desenho para o mesmo projeto) para quem não tem foto. |
+| Linhas-guia | , ,  no CSS | A coluna central (max-w-3xl) tem bordas laterais; as linhas horizontais e as faixas hachuradas são pseudo-elementos de 200vw, então atravessam a tela sem criar rolagem lateral ( no body). |
+| Capa isométrica |  | Placa, chip, conector e trilhas descritos em coordenadas (x, y, z) e projetados em isométrico. Pulsos de sinal com  ao longo das trilhas; somem com . |
+| Contribuições | ,  | Calendário do último ano em SVG, escala de cinza de 5 níveis, dica no hover; no celular começa rolado nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
+| Página inicial |  | Todas as seções, na ordem. |
+| Página de projeto |  | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
+| Rotas |  | Hash ( ou ): funciona em qualquer servidor estático. |
+| Capas geradas |  | Trecho de placa em SVG gerado do id do projeto, para quem não tem foto. |
+| Ícones da stack |  | Caminhos SVG do pacote simple-icons, em currentColor (monocromático nos dois temas). |
 
 ## Decisões e trade-offs
 
@@ -58,7 +59,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | **Projetos curados à mão** | A maioria dos projetos relevantes é privada; a curadoria conta melhor a história | Repositório novo não aparece sozinho |
 | **Atividade via API de terceiros** (jogruber) | É o único jeito de ler o calendário de contribuições do navegador sem token | Se o serviço cair, o cartão mostra "não consegui falar com o GitHub" e o resto do site segue normal |
 | **Commits privados só como número** | O calendário conta contribuições privadas (com a opção ligada no perfil) sem expor nome de repositório | Não dá para dizer em qual projeto privado foi o commit |
-| **Canvas 2D** em vez de WebGL/Three.js | Leve, sem dependência, suficiente para linhas e pontos | Sem efeitos 3D |
+| **SVG isométrico** em vez de canvas ou WebGL | Traço nítido em qualquer resolução, segue o tema via variáveis CSS, sem dependência | Cena fixa, sem interação com o cursor |
 | **Caddy** em vez de Nginx | HTTPS automático sem certbot; config curta | — |
 
 ## Segurança e privacidade

@@ -3,56 +3,59 @@
 @custom-variant claro (&:where(.claro, .claro *));
 
 @theme {
-  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-mao: 'Caveat', cursive;
 
   --color-fundo: var(--fundo);
-  --color-placa: var(--placa);
-  --color-placa-2: var(--placa-2);
+  --color-superficie: var(--superficie);
   --color-linha: var(--linha);
   --color-texto: var(--texto);
   --color-suave: var(--suave);
-  --color-cobre: var(--cobre);
-  --color-cobre-claro: var(--cobre-claro);
-  --color-led: var(--led);
-  --color-alerta: var(--alerta);
+  --color-apagado: var(--apagado);
+  --color-vivo: var(--vivo);
+  --color-novo: var(--novo);
 }
 
-/* Escuro: placa de fibra de vidro com trilhas de cobre */
+/* Monocromático: só o verde de "ao vivo" e o azul de "em andamento" têm cor */
 :root {
-  --fundo: #0d0c0a;
-  --placa: #151310;
-  --placa-2: #1d1a16;
-  --linha: #2c2721;
-  --texto: #efe8dc;
-  --suave: #9d9282;
-  --cobre: #e3813b;
-  --cobre-claro: #ffb67a;
-  --led: #8be07f;
-  --alerta: #ff6b5b;
-  --traco: #2a231b;
+  --fundo: #09090b;
+  --superficie: #111113;
+  --linha: #27272a;
+  --texto: #fafafa;
+  --suave: #a1a1aa;
+  --apagado: #71717a;
+  --vivo: #4ade80;
+  --novo: #3b82f6;
+  --n0: #18181b;
+  --n1: #3f3f46;
+  --n2: #71717a;
+  --n3: #a1a1aa;
+  --n4: #f4f4f5;
   color-scheme: dark;
 }
 
-/* Claro: papel de desenho técnico */
 :root.claro {
-  --fundo: #ede7da;
-  --placa: #f7f3ea;
-  --placa-2: #e8e1d2;
-  --linha: #d3c9b5;
-  --texto: #1d1914;
-  --suave: #6d6355;
-  --cobre: #b85516;
-  --cobre-claro: #d9772f;
-  --led: #2f8f3e;
-  --alerta: #c9362b;
-  --traco: #d9cfbc;
+  --fundo: #ffffff;
+  --superficie: #fafafa;
+  --linha: #e4e4e7;
+  --texto: #09090b;
+  --suave: #52525b;
+  --apagado: #a1a1aa;
+  --vivo: #16a34a;
+  --novo: #2563eb;
+  --n0: #f4f4f5;
+  --n1: #d4d4d8;
+  --n2: #a1a1aa;
+  --n3: #52525b;
+  --n4: #18181b;
   color-scheme: light;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
 }
 
 body {
@@ -60,130 +63,95 @@ body {
   color: var(--texto);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 
 ::selection {
-  background: var(--cobre);
+  background: var(--texto);
   color: var(--fundo);
 }
 
 :focus-visible {
-  outline: 2px solid var(--cobre);
-  outline-offset: 3px;
+  outline: 2px solid var(--texto);
+  outline-offset: 2px;
 }
 
-/* Granulado por cima de tudo, para tirar o aspecto "liso de template" */
-.granulado {
-  position: fixed;
-  inset: -50%;
-  z-index: 60;
-  pointer-events: none;
-  opacity: 0.07;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-:root.claro .granulado {
-  opacity: 0.12;
-  mix-blend-mode: multiply;
-}
-
-/* Brilho de cobre que segue o cursor dentro de cada cartão */
-.cartao {
-  --mx: 50%;
-  --my: 50%;
-}
-.cartao::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s;
-  background: radial-gradient(420px circle at var(--mx) var(--my), color-mix(in srgb, var(--cobre) 13%, transparent), transparent 60%);
-}
-.cartao:hover::before {
-  opacity: 1;
-}
-
-/* Marcas de canto, como num painel parafusado */
-.cantos > i {
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  border-color: var(--linha);
-  transition: border-color 0.25s;
-}
-.cantos > i:nth-child(1) { top: 7px; left: 7px; border-top: 1px solid; border-left: 1px solid; }
-.cantos > i:nth-child(2) { top: 7px; right: 7px; border-top: 1px solid; border-right: 1px solid; }
-.cantos > i:nth-child(3) { bottom: 7px; left: 7px; border-bottom: 1px solid; border-left: 1px solid; }
-.cantos > i:nth-child(4) { bottom: 7px; right: 7px; border-bottom: 1px solid; border-right: 1px solid; }
-.cartao:hover .cantos > i {
-  border-color: var(--cobre);
-}
-
-/* Foto em duotom cobre; ganha cor no hover */
-.duotom {
+/* Linha horizontal que atravessa a tela inteira, além da coluna central */
+.linha-cima,
+.linha-baixo {
   position: relative;
-  isolation: isolate;
 }
-.duotom img {
-  filter: grayscale(1) contrast(1.15) brightness(0.95);
-  transition: filter 0.6s;
-}
-.duotom::after {
+.linha-cima::before,
+.linha-baixo::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: var(--cobre);
-  mix-blend-mode: multiply;
-  opacity: 0.85;
-  transition: opacity 0.6s;
+  left: -100vw;
+  width: 200vw;
+  height: 1px;
+  background: var(--linha);
   pointer-events: none;
 }
-:root.claro .duotom::after {
-  mix-blend-mode: color;
-  opacity: 0.6;
+.linha-cima::before {
+  top: -1px;
 }
-.duotom:hover img,
-.cartao:hover .duotom img {
-  filter: grayscale(0) contrast(1) brightness(1);
-}
-.duotom:hover::after,
-.cartao:hover .duotom::after {
-  opacity: 0;
+.linha-baixo::after {
+  bottom: -1px;
 }
 
-/* Faixa rolante da stack */
-@keyframes rolar {
-  to {
-    transform: translateX(-50%);
-  }
+/* Faixa hachurada que separa blocos, também de ponta a ponta */
+.listra {
+  position: relative;
+  height: 2rem;
 }
-.faixa {
-  animation: rolar var(--dur, 40s) linear infinite;
+.listra::before {
+  content: '';
+  position: absolute;
+  inset: 0 -100vw;
+  border-block: 1px solid var(--linha);
+  background-image: repeating-linear-gradient(-45deg, var(--linha) 0 1px, transparent 1px 7px);
+  pointer-events: none;
 }
-.faixa-reversa {
-  animation-direction: reverse;
+
+/* Grade com linhas internas: cada célula desenha a borda da direita e de baixo */
+.grade-linhas > * {
+  border-bottom: 1px solid var(--linha);
 }
-.cartao:hover .faixa {
-  animation-play-state: paused;
+@media (min-width: 640px) {
+  .grade-2 > *:nth-child(odd) { border-right: 1px solid var(--linha); }
+  .grade-3 > *:not(:nth-child(3n)) { border-right: 1px solid var(--linha); }
+}
+@media (max-width: 639px) {
+  .grade-3 > *:nth-child(odd) { border-right: 1px solid var(--linha); }
+}
+
+/* Foto do projeto: cinza, ganha cor no hover */
+.foto-pb {
+  filter: grayscale(1);
+  transition: filter 0.5s;
+}
+.group:hover .foto-pb {
+  filter: grayscale(0);
 }
 
 @keyframes piscar {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  50% { opacity: 0.3; }
 }
-.led-pisca {
-  animation: piscar 1.6s ease-in-out infinite;
+.pisca {
+  animation: piscar 1.8s ease-in-out infinite;
 }
 
-.rolagem-fina {
-  scrollbar-width: thin;
-  scrollbar-color: var(--linha) transparent;
+.sem-barra {
+  scrollbar-width: none;
+}
+.sem-barra::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *,
   *::before,
   *::after {
@@ -191,48 +159,22 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .so-com-movimento {
+    display: none;
+  }
 }
 
-/* ─── Painel em grade (bento) ─────────────────────────────── */
-.bento {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr;
-  grid-template-areas:
-    'eu'
-    'foto'
-    'atividade'
-    'projetos'
-    'hardware'
-    'stack'
-    'trajetoria'
-    'contato';
+/* Linha que começa no elemento e segue só para a direita (ao lado do avatar) */
+.linha-direita {
+  position: relative;
 }
-.bento > #cartao-foto {
-  aspect-ratio: 4 / 3;
-}
-@media (min-width: 768px) {
-  .bento {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      'eu eu'
-      'foto atividade'
-      'projetos projetos'
-      'hardware stack'
-      'hardware trajetoria'
-      'contato contato';
-  }
-  .bento > #cartao-foto {
-    aspect-ratio: auto;
-  }
-}
-@media (min-width: 1100px) {
-  .bento {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-areas:
-      'eu eu eu eu foto foto'
-      'projetos projetos projetos projetos atividade atividade'
-      'hardware hardware stack stack stack stack'
-      'hardware hardware trajetoria trajetoria contato contato';
-  }
+.linha-direita::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100vw;
+  height: 1px;
+  background: var(--linha);
+  pointer-events: none;
 }

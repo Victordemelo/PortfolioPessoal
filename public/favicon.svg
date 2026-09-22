@@ -1,9 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#151310"/>
-  <g fill="none" stroke="#e3813b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14 16 L32 48 L50 16"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -3 13 11" shape-rendering="crispEdges">
+  <rect x="-1" y="-3" width="13" height="11" rx="1.6" fill="#09090b"/>
+  <g fill="#fafafa">
+    <rect x="0" y="0" width=".86" height=".86"/><rect x="4" y="0" width=".86" height=".86"/>
+    <rect x="0" y="1" width=".86" height=".86"/><rect x="4" y="1" width=".86" height=".86"/>
+    <rect x="1" y="2" width=".86" height=".86"/><rect x="3" y="2" width=".86" height=".86"/>
+    <rect x="1" y="3" width=".86" height=".86"/><rect x="3" y="3" width=".86" height=".86"/>
+    <rect x="2" y="4" width=".86" height=".86"/>
+    <rect x="6" y="0" width=".86" height=".86"/><rect x="10" y="0" width=".86" height=".86"/>
+    <rect x="6" y="1" width=".86" height=".86"/><rect x="7" y="1" width=".86" height=".86"/><rect x="9" y="1" width=".86" height=".86"/><rect x="10" y="1" width=".86" height=".86"/>
+    <rect x="6" y="2" width=".86" height=".86"/><rect x="8" y="2" width=".86" height=".86"/><rect x="10" y="2" width=".86" height=".86"/>
+    <rect x="6" y="3" width=".86" height=".86"/><rect x="10" y="3" width=".86" height=".86"/>
+    <rect x="6" y="4" width=".86" height=".86"/><rect x="10" y="4" width=".86" height=".86"/>
   </g>
-  <circle cx="14" cy="16" r="5" fill="#151310" stroke="#e3813b" stroke-width="3"/>
-  <circle cx="50" cy="16" r="5" fill="#151310" stroke="#e3813b" stroke-width="3"/>
-  <circle cx="32" cy="48" r="4" fill="#e3813b"/>
 </svg>
