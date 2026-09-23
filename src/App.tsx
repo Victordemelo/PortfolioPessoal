@@ -16,13 +16,13 @@ function useSecaoAtiva(ids: string[]) {
   const chave = ids.join(',')
   useEffect(() => {
     const lista = chave.split(',')
-    // Ativa = a última seção cujo topo já passou de 35% da altura da tela.
-    // No fim da página a última seção é curta e nunca chega lá; então,
-    // encostou no fim, acende a última.
+    // Ativa = a última seção cujo topo já passou de uma linha de referência.
+    // A linha desce conforme a rolagem (35% da tela no topo da página, 90% no
+    // fim), então mesmo numa página curta cada seção acende na sua vez, em ordem.
     const atualizar = () => {
-      const fim = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8
-      if (fim) return setAtiva(lista[lista.length - 1])
-      const linha = window.innerHeight * 0.35
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const progresso = max > 0 ? Math.min(1, window.scrollY / max) : 1
+      const linha = window.innerHeight * (0.35 + 0.55 * progresso)
       let atual: string | null = null
       for (const id of lista) {
         const el = document.getElementById(id)

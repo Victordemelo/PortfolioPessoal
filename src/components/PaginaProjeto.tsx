@@ -52,7 +52,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
 
       <header id="visao" className="mt-6 scroll-mt-6">
         {p.contexto && <p className="font-mono text-xs tracking-widest text-destaque uppercase">{p.contexto}</p>}
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">{p.nome}</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight [overflow-wrap:anywhere] min-[400px]:text-4xl sm:text-5xl">{p.nome}</h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-suave">{p.resumo}</p>
       </header>
 
@@ -76,50 +76,46 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
         ))}
       </dl>
 
-      <div className="grid gap-x-12 lg:grid-cols-[1fr_220px]">
-        <Bloco id="destaques" titulo={`Destaques · ${p.destaques.length}`}>
-          <ul className="space-y-3 leading-relaxed">
-            {p.destaques.map((d) => (
-              <li key={d} className="grid grid-cols-[1.25rem_1fr]">
-                <span className="mt-2.5 h-px w-3 bg-destaque" />
-                {d}
+      <Bloco id="destaques" titulo={`Destaques · ${p.destaques.length}`}>
+        <ul className="space-y-3 leading-relaxed">
+          {p.destaques.map((d) => (
+            <li key={d} className="grid grid-cols-[1.25rem_1fr]">
+              <span className="mt-2.5 h-px w-3 bg-destaque" />
+              {d}
+            </li>
+          ))}
+        </ul>
+      </Bloco>
+      <Bloco id="stack-projeto" titulo="Stack">
+        <ul className="flex flex-wrap gap-1.5">
+          {p.stack.map((s) => (
+            <li key={s} className="rounded border border-linha px-2 py-1 font-mono text-xs">
+              {s}
+            </li>
+          ))}
+        </ul>
+      </Bloco>
+      {links.length > 0 && (
+        <Bloco id="links" titulo="Links">
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {links.map((l) => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-between rounded-md border border-linha px-3 py-2 text-sm transition hover:border-destaque hover:text-destaque"
+                >
+                  {l.rotulo}
+                  {l.icone}
+                </a>
               </li>
             ))}
           </ul>
         </Bloco>
-        <div>
-          <Bloco id="stack-projeto" titulo="Stack">
-            <ul className="flex flex-wrap gap-1.5">
-              {p.stack.map((s) => (
-                <li key={s} className="rounded border border-linha px-2 py-1 font-mono text-xs">
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </Bloco>
-          {links.length > 0 && (
-            <Bloco id="links" titulo="Links">
-              <ul className="space-y-2">
-                {links.map((l) => (
-                  <li key={l.href}>
-                    <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between rounded-md border border-linha px-3 py-2 text-sm transition hover:border-destaque hover:text-destaque"
-                    >
-                      {l.rotulo}
-                      {l.icone}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </Bloco>
-          )}
-        </div>
-      </div>
+      )}
 
-      <nav className="mt-14 grid grid-cols-2 gap-3">
+      <nav className="mt-14 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">
         <a href={`/projetos/${anterior.id}`} className="group rounded-lg border border-linha p-4 transition hover:border-destaque">
           <span className="flex items-center gap-1 font-mono text-xs text-apagado">
             <ArrowLeft size={13} className="transition group-hover:-translate-x-0.5" /> anterior

@@ -100,6 +100,7 @@ function RemoteWake({ interativo }: { interativo: boolean }) {
   const [digitado, setDigitado] = useState(0)
   const [toque, setToque] = useState<{ y: number; n: number } | null>(null)
   const timers = useRef<number[]>([])
+  const ultimoClique = useRef(0)
   const agendar = (ms: number, fn: () => void) => timers.current.push(window.setTimeout(fn, ms))
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
@@ -130,10 +131,13 @@ function RemoteWake({ interativo }: { interativo: boolean }) {
     agendar(fimDigitacao + PARADA.length * 380 + 700, () => setFase('desligado'))
   }
 
-  // Miniatura: demonstração automática (liga, fica um tempo ligado, desliga)
+  // Demonstração em loop (desligado ~2 s, ligado ~4 s). Na página do projeto,
+  // um clique da pessoa pausa o loop por 10 s para ela brincar à vontade.
   useEffect(() => {
-    if (interativo || reduzido) return
-    const t = window.setTimeout(() => (fase === 'desligado' ? ligar() : fase === 'ligado' ? desligar() : undefined), fase === 'desligado' ? 1400 : 3200)
+    if (reduzido || (fase !== 'desligado' && fase !== 'ligado')) return
+    const base = fase === 'desligado' ? 2000 : 4000
+    const pausa = interativo ? Math.max(0, 10000 - (Date.now() - ultimoClique.current)) : 0
+    const t = window.setTimeout(() => (fase === 'desligado' ? ligar() : desligar()), Math.max(base, pausa))
     return () => clearTimeout(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase, interativo])
@@ -142,10 +146,10 @@ function RemoteWake({ interativo }: { interativo: boolean }) {
   const enviando = fase === 'enviando' || (fase === 'comando' && digitado === 0)
   const status: Record<Fase, [string, string]> = {
     desligado: ['desligado', '#6c727d'],
-    enviando: ['enviando magic packet…', '#27C7F5'],
+    enviando: ['enviando…', '#27C7F5'],
     boot: ['ligando…', '#27C7F5'],
     ligado: ['ligado', '#4ade80'],
-    comando: ['enviando comando…', '#ff8c6b'],
+    comando: ['comando…', '#ff8c6b'],
     desligando: ['desligando…', '#ff8c6b'],
   }
 
@@ -162,8 +166,8 @@ function RemoteWake({ interativo }: { interativo: boolean }) {
       <text x="62" y="123" className="fill-[#8b949e] font-mono text-[5.6px]">
         {status[fase][0]}
       </text>
-      <BotaoCelular y={131} rotulo="LIGAR" cor="#42F5AD" ativo={fase === 'desligado'} interativo={interativo} aoClicar={ligar} />
-      <BotaoCelular y={153} rotulo="DESLIGAR" cor="#ff8c6b" ativo={fase === 'ligado'} interativo={interativo} aoClicar={desligar} />
+      <BotaoCelular y={131} rotulo="LIGAR" cor="#42F5AD" ativo={fase === 'desligado'} interativo={interativo} aoClicar={() => ((ultimoClique.current = Date.now()), ligar())} />
+      <BotaoCelular y={153} rotulo="DESLIGAR" cor="#ff8c6b" ativo={fase === 'ligado'} interativo={interativo} aoClicar={() => ((ultimoClique.current = Date.now()), desligar())} />
       {toque && <circle key={toque.n} cx="81" cy={toque.y + 8.5} r="9" fill="none" stroke="#ffffff" strokeWidth="1.2" className="rw-toque-1x" />}
       <rect x="72" y="190" width="18" height="3" rx="1.5" fill="var(--apagado)" />
 

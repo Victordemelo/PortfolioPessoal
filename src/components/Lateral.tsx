@@ -53,7 +53,7 @@ export function BotaoTema() {
 
 function Linha({ k, children }: { k: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 border-b border-linha py-2 last:border-0">
+    <div className="grid grid-cols-1 gap-x-3 gap-y-0.5 border-b border-linha py-2 last:border-0 min-[360px]:grid-cols-[4.25rem_1fr] min-[360px]:items-center">
       <dt className="font-mono text-[11px] tracking-wider text-apagado uppercase">{k}</dt>
       <dd className="min-w-0 text-sm [&>a]:break-all">{children}</dd>
     </div>
@@ -167,7 +167,7 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
       </div>
 
       <div className="flex items-center gap-4">
-        <img src={perfil.avatar} alt={perfil.nome} width={72} height={72} className="h-18 w-18 shrink-0 rounded-lg border border-linha object-cover" />
+        <img src={perfil.avatar} alt={perfil.nome} width={72} height={72} className="h-14 w-14 shrink-0 rounded-lg border border-linha object-cover min-[360px]:h-18 min-[360px]:w-18" />
         <div className="min-w-0">
           <p className="text-xl leading-tight font-semibold tracking-tight">{perfil.nome}</p>
           <p className="mt-1 text-sm text-suave">{perfil.titulo}</p>
@@ -197,7 +197,7 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
         </dl>
       )}
 
-      <Conquistas />
+      {!projeto && <Conquistas />}
 
       {projeto ? (
         <>
@@ -208,7 +208,7 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
         <Indice titulo="Índice" itens={SECOES} ativo={ativo} prefixo="/#" />
       )}
 
-      <div className="flex gap-2 lg:mt-auto">
+      <div className="flex flex-wrap gap-2 lg:mt-auto">
         <Social href={linkWhatsapp()} rotulo="WhatsApp">
           <WhatsappIcon size={16} />
         </Social>

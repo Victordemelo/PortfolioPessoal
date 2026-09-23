@@ -250,7 +250,7 @@ export function Pinagem() {
           <tr className="border-b border-linha font-mono text-[10px] tracking-widest text-apagado uppercase">
             <th className="py-2 pr-3 text-left font-normal">Pino</th>
             <th className="py-2 pr-3 text-left font-normal">Nome</th>
-            <th className="py-2 text-left font-normal">Função</th>
+            <th className="py-2 text-left font-normal max-[359px]:hidden">Função</th>
           </tr>
         </thead>
         <tbody>
@@ -267,7 +267,7 @@ export function Pinagem() {
                   <span className={p.tec ? '' : 'font-mono text-apagado'}>{p.nome}</span>
                 </span>
               </td>
-              <td className="py-2 text-xs text-suave">{p.papel}</td>
+              <td className="py-2 text-xs text-suave max-[359px]:hidden">{p.papel}</td>
             </tr>
           ))}
         </tbody>

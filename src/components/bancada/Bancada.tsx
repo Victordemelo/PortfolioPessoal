@@ -82,7 +82,7 @@ export function Abertura() {
       {/* ─── Fundo: a bancada ─────────────────────────── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -z-10 opacity-30 max-lg:inset-x-[-30%] max-lg:bottom-6 max-lg:[mask-image:linear-gradient(to_bottom,transparent,black_45%)] sm:opacity-40 lg:top-1/2 lg:-right-[6%] lg:w-[64%] lg:-translate-y-[46%] lg:opacity-60 lg:[mask-image:linear-gradient(to_right,transparent,black_28%)]"
+        className="pointer-events-none absolute -z-10 opacity-25 brightness-[0.45] saturate-50 claro:opacity-15 claro:brightness-100 max-lg:inset-x-[-30%] max-lg:bottom-6 max-lg:[mask-image:linear-gradient(to_bottom,transparent,black_45%)] sm:opacity-30 lg:brightness-100 lg:saturate-100 claro:lg:opacity-60 lg:top-1/2 lg:-right-[6%] lg:w-[64%] lg:-translate-y-[46%] lg:opacity-60 lg:[mask-image:linear-gradient(to_right,transparent,black_28%)]"
       >
         <Placa refSensor={refSensor} distancia={cm} ledAceso={perto} anguloServo={angulo} ledPlaca={ledPlaca} oled={oled} ligada />
       </div>
@@ -92,7 +92,7 @@ export function Abertura() {
         <p className="font-mono text-xs text-suave">
           <span className="text-destaque">//</span> desenvolvedor de software · {perfil.local}
         </p>
-        <h1 className="mt-5 max-w-3xl text-5xl leading-[1.02] font-semibold tracking-tight sm:text-6xl xl:text-7xl">
+        <h1 className="mt-5 max-w-3xl text-4xl leading-[1.02] font-semibold tracking-tight [overflow-wrap:anywhere] min-[420px]:text-5xl sm:text-6xl xl:text-7xl">
           Olá, eu sou o <span className="text-destaque">Victor</span>
           <span className="block text-texto/90">de Melo da Rosa.</span>
         </h1>

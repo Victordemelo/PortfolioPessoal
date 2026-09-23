@@ -56,7 +56,7 @@ function Sobre() {
   ]
   return (
     <Secao id="sobre" titulo="Sobre">
-      <p className="max-w-2xl text-3xl leading-[1.2] font-light tracking-tight sm:text-4xl">
+      <p className="max-w-2xl text-2xl leading-[1.2] font-light tracking-tight min-[360px]:text-3xl sm:text-4xl">
         Escrevo o sistema, subo o servidor e, <span className="text-destaque">quando precisa,</span> pego o ferro de solda.
       </p>
       <div className="mt-8 max-w-2xl space-y-4 leading-relaxed text-suave">
@@ -68,10 +68,10 @@ function Sobre() {
         {numeros.map((n, i) => (
           <div
             key={n.r}
-            className={`flex flex-col-reverse gap-1 p-4 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b sm:border-b-0' : ''} border-linha sm:border-r sm:last:border-r-0`}
+            className={`flex min-w-0 flex-col-reverse gap-1 p-3 min-[360px]:p-4 ${i % 2 === 0 ? 'border-r' : ''} ${i < 2 ? 'border-b sm:border-b-0' : ''} border-linha sm:border-r sm:last:border-r-0`}
           >
             <dt className="text-xs text-apagado">{n.r}</dt>
-            <dd className="font-mono text-2xl font-medium tabular-nums">{n.v}</dd>
+            <dd className="font-mono text-xl font-medium tabular-nums min-[360px]:text-2xl">{n.v}</dd>
           </div>
         ))}
       </dl>
@@ -287,7 +287,7 @@ function Contato() {
         </a>
         <a
           href={`mailto:${perfil.contato.email}`}
-          className="inline-flex items-center gap-2 rounded-md border border-linha px-3.5 py-2.5 text-sm transition hover:border-destaque hover:text-destaque"
+          className="inline-flex max-w-full items-center gap-2 rounded-md border border-linha px-3.5 py-2.5 text-sm break-all transition hover:border-destaque hover:text-destaque"
         >
           {perfil.contato.email}
         </a>
