@@ -46,7 +46,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | Abertura | `components/bancada/Bancada.tsx` | Texto de apresentação sobre a placa (que fica atrás, esmaecida e sem receber clique). A cada 450 ms mede a distância até o cursor (ou de um objeto simulado, no toque), pisca o LED da placa e atualiza LED, servo e display. Faixa de telemetria rolando em CSS. |
 | Desenho da placa | `components/bancada/Placa.tsx` | SVG com as peças em cores reais; ondas do sonar e pulsos nos fios de dados em CSS, desligados com `prefers-reduced-motion`. |
 | Traço lógico | `components/Onda.tsx` | Sinal digital rolando ao lado do título de cada seção. |
-| Barra lateral | `components/Lateral.tsx` | Perfil, tabela "Características" (status, local, hora com fuso relativo ao visitante, formação, e-mail), índice numerado e redes. Fixa (`sticky`) no desktop; no celular vira o topo da página. |
+| Barra lateral | `components/Lateral.tsx` | Perfil, tabela "Características" (status, trabalho, local, formação, e-mail), índice numerado e redes (WhatsApp, GitHub, LinkedIn, Instagram, e-mail). Fixa (`sticky`) no desktop; no celular vira o topo da página. |
 | Índice ativo | `useSecaoAtiva` em `App.tsx` | Na rolagem, a seção ativa é a última cujo topo passou de 35% da tela; encostou no fim da página, acende a última (Contato). |
 | Pinagem | `components/Pinagem.tsx` | A stack como um CI DIP-18 em SVG: pinos 1–9 descem à esquerda, 10–18 sobem à direita, 9 = GND e 18 = VCC. Hover ou foco no pino mostra a função e em quantos projetos a tecnologia aparece. No celular, tabela de pinos. |
 | Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG que escala com a coluna, 5 níveis de âmbar, dica no hover; no celular rola e começa nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
@@ -64,7 +64,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Decisão | Por quê | O que se perde |
 |---|---|---|
-| **Vite + React** (SPA) em vez de Next.js/Astro | Sem servidor de SSR para manter; build simples | SEO um pouco pior que HTML pré-renderizado; as meta tags do `index.html` cobrem o básico |
+| **Vite + React** (SPA) em vez de Next.js/Astro | Sem servidor de SSR para manter; build simples | Nada de SSR: o `seo.ts` compensa gerando no build o HTML de cada página (meta tags e conteúdo) |
 | **Conteúdo em `.ts`** em vez de CMS | Tipado: o TypeScript acusa campo faltando; muda com um commit | Precisa de rebuild para atualizar texto |
 | **Projetos curados à mão** | A maioria dos projetos relevantes é privada; a curadoria conta melhor a história | Repositório novo não aparece sozinho |
 | **Atividade via API de terceiros** (jogruber) | É o único jeito de ler o calendário de contribuições do navegador sem token | Se o serviço cair, o cartão mostra "não consegui falar com o GitHub" e o resto do site segue normal |
