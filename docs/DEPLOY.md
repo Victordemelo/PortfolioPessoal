@@ -56,6 +56,12 @@ Rode no seu PC, com o **IP público real** do servidor. O domínio não serve: e
 ssh-keyscan -t ed25519 IP_DO_SERVIDOR
 ```
 
+Ou no próprio servidor, lendo a chave direto do disco (troque `IP_DO_SERVIDOR` pelo IP):
+
+```bash
+echo "IP_DO_SERVIDOR $(cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub)"
+```
+
 ### 3. Secrets no GitHub
 
 Em **github.com/Victordemelo/PortfolioPessoal → Settings → Secrets and variables → Actions → New repository secret**:
@@ -72,7 +78,7 @@ Em **github.com/Victordemelo/PortfolioPessoal → Settings → Secrets and varia
 
 Aba **Actions → Deploy → Run workflow**. Os dois jobs (Build e Deploy no servidor) devem ficar verdes.
 
-O repositório é privado: o Actions usa os minutos grátis da conta (2.000/mês no plano Free; cada deploy gasta cerca de 1 a 2 minutos).
+O repositório é público: o Actions não gasta minutos da conta. Os secrets continuam fechados (não aparecem nos logs nem para PR vindo de fork), e o workflow só roda em push na `main` ou disparo manual, então ninguém de fora consegue acionar um deploy.
 
 ## Deploy na mão (se o GitHub estiver fora)
 
