@@ -1,96 +1,41 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowDown, Cpu, MousePointer2, Power } from 'lucide-react'
-import { perfil } from '../../data/perfil'
-import { sequenciaAtual, useAtividade, type Atividade } from '../../lib/atividade'
-import { arquivos } from './codigo'
-import { Editor } from './Editor'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowDown } from 'lucide-react'
+import { linkWhatsapp, perfil } from '../../data/perfil'
+import { useAtividade } from '../../lib/atividade'
+import { WhatsappIcon } from '../Icones'
 import { Placa } from './Placa'
-import { Serial, type LinhaSerial } from './Serial'
 
-// A bancada da abertura: um ESP32 "rodando" o firmware do editor.
-// O ponteiro de execução anda pelas linhas do loop() e cada linha tem efeito:
-// sonar.read mede a distância (até o cursor do mouse), digitalWrite acende o LED,
-// cancela.write move o servo e Serial.printf escreve no monitor serial.
+// Abertura: apresentação em primeiro plano e, no fundo, uma bancada com ESP32
+// "funcionando". O sensor ultrassônico mede a distância até o cursor; o LED
+// acende quando algo chega perto e o servo acompanha a distância.
+// Embaixo, uma faixa de telemetria com automações e integrações rolando.
 
-const LIMITE_CM = 30
-const TICK_MS = 110
-const MAX_LINHAS = 160
+const PERTO_CM = 40
+const CICLO_MS = 450
 
-// Linhas do loop() no firmware e quantos ticks o ponteiro fica em cada uma
-const FONTE = arquivos[0].codigo.split('\n')
-const INICIO_LOOP = FONTE.findIndex((l) => l.startsWith('void loop'))
-const achar = (trecho: string) => FONTE.findIndex((l, i) => i > INICIO_LOOP && l.includes(trecho))
-const L = {
-  ler: achar('sonar.read'),
-  decidir: achar('bool ocupada'),
-  led: achar('digitalWrite'),
-  servo: achar('cancela.write'),
-  imprimir: achar('Serial.printf'),
-  esperar: achar('delay('),
-}
-const PROGRAMA: [number, number][] = [
-  [L.ler, 1],
-  [L.decidir, 1],
-  [L.led, 1],
-  [L.servo, 1],
-  [L.imprimir, 1],
-  [L.esperar, 5],
-]
-const PASSOS = PROGRAMA.flatMap(([linha, n]) => Array(n).fill(linha) as number[])
+const AREAS = ['Sistemas web', 'Automações', 'Integrações e APIs', 'ESP32 e Arduino', 'Sensores e IoT']
 
-function agoraSerial() {
-  const d = new Date()
-  const p = (n: number, t = 2) => String(n).padStart(t, '0')
-  return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.${p(d.getMilliseconds(), 3)}`
+function useHora() {
+  const [hora, setHora] = useState('')
+  useEffect(() => {
+    const f = () => setHora(new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: perfil.fuso }).format(new Date()))
+    f()
+    const t = setInterval(f, 15_000)
+    return () => clearInterval(t)
+  }, [])
+  return hora
 }
 
-function linhasDeBoot(a: Atividade | null): [number, string][] {
-  const gh = a
-    ? `[github] 200 · ${a.total.toLocaleString('pt-BR')} contribuições em 12 meses · sequência ${sequenciaAtual(a.dias)} d`
-    : '[github] sem resposta · seguindo offline'
-  return [
-    [0, 'ets Jun  8 2016 00:22:57'],
-    [70, 'rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)'],
-    [60, 'load:0x3fff0030,len:1344'],
-    [60, 'entry 0x400805f0'],
-    [350, `[boot] VMR-2026 · firmware 2026.09 · ${perfil.nome}`],
-    [260, '[wifi] conectando a "floripa-5g"...'],
-    [650, '[wifi] ok · ip 192.168.0.42 · -58 dBm'],
-    [260, `[github] GET /v4/${perfil.github}?y=last`],
-    [520, gh],
-    [300, '[sensor] HC-SR04 ok · SSD1306 ok · SG90 em 0°'],
-    [260, '[loop] rodando · aproxime o cursor do sensor ultrassônico'],
-  ]
-}
-
-export function Bancada() {
+export function Abertura() {
   const { dados } = useAtividade()
-  const dadosRef = useRef(dados)
-  dadosRef.current = dados
-
+  const hora = useHora()
   const refSensor = useRef<SVGGElement>(null)
   const ponteiro = useRef({ x: 0, y: 0, dentro: false })
-  const idLinha = useRef(0)
-
-  const [linhas, setLinhas] = useState<LinhaSerial[]>([])
-  const [ligada, setLigada] = useState(true)
-  const [rodando, setRodando] = useState(false)
-  const [boot, setBoot] = useState(0) // muda a cada reset
-  const [passo, setPasso] = useState(0)
-  const passoRef = useRef(0)
-  const [cm, setCm] = useState(120)
-  const [ocupada, setOcupada] = useState(false)
-  const [servo, setServo] = useState(0)
+  const [cm, setCm] = useState(90)
   const [ledPlaca, setLedPlaca] = useState(false)
-  const [hora, setHora] = useState('')
-  const estado = useRef({ cm: 120, ocupada: false })
 
-  const escrever = useCallback((texto: string) => {
-    setLinhas((ls) => [...ls.slice(-MAX_LINHAS), { id: idLinha.current++, hora: agoraSerial(), texto }])
-  }, [])
-
-  // Posição do cursor (só mouse; no toque, ou com o mouse fora da página,
-  // a distância é simulada por um objeto indo e voltando)
+  // Cursor (só mouse). No toque, ou com o mouse fora da página, um objeto
+  // simulado vai e volta na frente do sensor.
   useEffect(() => {
     const mover = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') ponteiro.current = { x: e.clientX, y: e.clientY, dentro: true }
@@ -104,153 +49,128 @@ export function Bancada() {
     }
   }, [])
 
-  // Boot: escreve a sequência do ESP32 com os atrasos de uma placa de verdade.
-  // Na linha do GitHub, espera a resposta (até 5 s) como o firmware esperaria.
+  // Um ciclo do "firmware": mede, pisca o LED da placa e atualiza a leitura
   useEffect(() => {
-    let cancelado = false
-    const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms))
-    ;(async () => {
-      setLinhas([])
-      setRodando(false)
-      setLigada(false)
-      await dormir(450)
-      if (cancelado) return
-      setLigada(true)
-      const roteiro = linhasDeBoot(null)
-      for (let i = 0; i < roteiro.length; i++) {
-        await dormir(roteiro[i][0])
-        // (a linha da resposta; no roteiro sem dados ela é a de "sem resposta")
-        if (roteiro[i][1].startsWith('[github] sem')) {
-          for (let esperado = 0; !dadosRef.current && esperado < 5000; esperado += 250) await dormir(250)
-        }
-        if (cancelado) return
-        escrever(linhasDeBoot(dadosRef.current)[i][1])
-      }
-      await dormir(200)
-      if (!cancelado) setRodando(true)
-    })()
-    return () => {
-      cancelado = true
-    }
-  }, [boot, escrever])
-
-  // Loop: o ponteiro de execução anda pelas linhas e cada uma age na placa
-  useEffect(() => {
-    if (!rodando) return
     const id = setInterval(() => {
-      const prox = (passoRef.current + 1) % PASSOS.length
-      passoRef.current = prox
-      setPasso(prox)
-      const linha = PASSOS[prox]
-      const s = estado.current
-      if (linha === L.ler) {
-        const el = refSensor.current
-        const pt = ponteiro.current
-        let medida: number
-        if (el && pt.dentro) {
-          const r = el.getBoundingClientRect()
-          const px = Math.hypot(pt.x - (r.left + r.width / 2), pt.y - (r.top + r.height / 2))
-          medida = 2 + px * 0.32
-        } else {
-          medida = 62 + 54 * Math.sin(performance.now() / 2300)
-        }
-        s.cm = Math.min(400, Math.max(2, medida + (Math.random() - 0.5) * 0.8))
-        setCm(s.cm)
-        setLedPlaca((v) => !v)
-      } else if (linha === L.decidir) {
-        const nova = s.cm < LIMITE_CM
-        if (nova !== s.ocupada) escrever(`[evento] vaga ${nova ? 'OCUPADA' : 'LIVRE'} · cancela ${nova ? 'abrindo (90°)' : 'fechando (0°)'}`)
-        s.ocupada = nova
-      } else if (linha === L.led) {
-        setOcupada(s.ocupada)
-      } else if (linha === L.servo) {
-        setServo(s.ocupada ? 80 : 0)
-      } else if (linha === L.imprimir) {
-        escrever(`dist=${s.cm.toFixed(1)}cm vaga=${s.ocupada ? 'OCUPADA' : 'LIVRE'}`)
+      if (document.hidden) return
+      const el = refSensor.current
+      const pt = ponteiro.current
+      let medida: number
+      if (el && pt.dentro) {
+        const r = el.getBoundingClientRect()
+        medida = 2 + Math.hypot(pt.x - (r.left + r.width / 2), pt.y - (r.top + r.height / 2)) * 0.32
+      } else {
+        medida = 70 + 58 * Math.sin(performance.now() / 2600)
       }
-    }, TICK_MS)
+      setCm(Math.min(400, Math.max(2, medida + (Math.random() - 0.5) * 0.8)))
+      setLedPlaca((v) => !v)
+    }, CICLO_MS)
     return () => clearInterval(id)
-  }, [rodando, escrever])
-
-  // Relógio do display
-  useEffect(() => {
-    const f = () => setHora(new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: perfil.fuso }).format(new Date()))
-    f()
-    const t = setInterval(f, 1000)
-    return () => clearInterval(t)
   }, [])
 
-  const reiniciar = useCallback(() => {
-    setOcupada(false)
-    setServo(0)
-    estado.current.ocupada = false
-    setBoot((b) => b + 1)
-  }, [])
-
+  const perto = cm < PERTO_CM
   const semana = dados?.dias.slice(-7) ?? []
   const oled = {
-    linhas: [`VMR-2026   ${hora.slice(0, 5)}`, `dist ${cm.toFixed(1).padStart(6)} cm`, `vaga ${ocupada ? 'OCUPADA' : 'LIVRE'}`],
+    linhas: [`VICTOR DE MELO  ${hora}`, `dist ${cm.toFixed(1).padStart(6)} cm`, dados ? `commits/ano ${dados.total}` : 'wifi: conectando'],
     barras: semana.length ? semana.map((d) => d.nivel / 4) : Array(7).fill(0),
   }
+  // Servo: 0° longe, até 150° quando algo encosta no sensor
+  const angulo = Math.round(150 * (1 - Math.min(cm, 150) / 150))
 
   return (
-    <div>
-      <div className="grid items-center gap-8 py-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12 lg:py-12">
-        <div>
-          <p className="font-mono text-xs text-destaque">
-            <span className="text-apagado">~/bancada $</span> ./apresentar --modo=vivo
-          </p>
-          <h1 className="mt-4 text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl xl:text-6xl">{perfil.nome}</h1>
-          <p className="mt-4 text-lg text-suave">
-            Engenharia da Computação e desenvolvimento full stack.{' '}
-            <span className="text-texto">Do firmware ao deploy:</span> microcontroladores, sensores, APIs e sistemas web.
-          </p>
-          <ul className="mt-6 space-y-2 font-mono text-xs text-suave">
-            <li className="flex items-center gap-2.5 [@media(hover:none)]:hidden">
-              <MousePointer2 size={14} className="text-destaque" /> aproxime o cursor do sensor ultrassônico
-            </li>
-            <li className="hidden items-center gap-2.5 [@media(hover:none)]:flex">
-              <MousePointer2 size={14} className="text-destaque" /> um objeto simulado passa na frente do sensor
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Power size={14} className="text-destaque" /> clique em EN no ESP32 para reiniciar
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Cpu size={14} className="text-destaque" /> o firmware abaixo é o que está rodando na placa
-            </li>
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#/projetos" className="inline-flex items-center gap-2 rounded-md bg-destaque px-4 py-2.5 text-sm font-medium text-fundo transition hover:opacity-90">
-              Ver projetos <ArrowDown size={15} />
-            </a>
-            <a href="#/contato" className="inline-flex items-center gap-2 rounded-md border border-linha bg-superficie px-4 py-2.5 text-sm transition hover:border-destaque hover:text-destaque">
-              Falar comigo
-            </a>
-          </div>
-        </div>
-
-        <figure>
-          <Placa
-            refSensor={refSensor}
-            distancia={cm}
-            ocupada={ocupada}
-            anguloServo={servo}
-            ledPlaca={ledPlaca}
-            oled={oled}
-            aoReiniciar={reiniciar}
-            ligada={ligada}
-          />
-          <figcaption className="mt-2 text-center font-mono text-[11px] text-apagado">
-            ESP32 · HC-SR04 · SSD1306 · SG90 — vaga {ocupada ? <span className="text-destaque">ocupada</span> : 'livre'} abaixo de {LIMITE_CM} cm
-          </figcaption>
-        </figure>
+    <div className="relative isolate">
+      {/* ─── Fundo: a bancada ─────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -z-10 opacity-30 max-lg:inset-x-[-30%] max-lg:bottom-6 max-lg:[mask-image:linear-gradient(to_bottom,transparent,black_45%)] sm:opacity-40 lg:top-1/2 lg:-right-[6%] lg:w-[64%] lg:-translate-y-[46%] lg:opacity-60 lg:[mask-image:linear-gradient(to_right,transparent,black_28%)]"
+      >
+        <Placa refSensor={refSensor} distancia={cm} ledAceso={perto} anguloServo={angulo} ledPlaca={ledPlaca} oled={oled} ligada />
       </div>
 
-      <div className="grid gap-4 pb-12 lg:grid-cols-2">
-        <div className="hidden sm:block">
-          <Editor linhaExec={rodando ? PASSOS[passo] : null} />
+      {/* ─── Primeiro plano ───────────────────────────── */}
+      <div className="flex min-h-[calc(88svh-3.5rem)] flex-col justify-center py-14 lg:py-20">
+        <p className="font-mono text-xs text-suave">
+          <span className="text-destaque">//</span> desenvolvedor de software · {perfil.local}
+        </p>
+        <h1 className="mt-5 max-w-3xl text-5xl leading-[1.02] font-semibold tracking-tight sm:text-6xl xl:text-7xl">
+          Olá, eu sou o <span className="text-destaque">Victor</span>
+          <span className="block text-texto/90">de Melo da Rosa.</span>
+        </h1>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-suave sm:text-xl">
+          Desenvolvo software de ponta a ponta: <span className="text-texto">sistemas web, automações e integrações</span>, e levo isso até o
+          hardware, com <span className="text-texto">microcontroladores, sensores e IoT</span>.
+        </p>
+
+        <ul className="mt-7 flex max-w-xl flex-wrap gap-2">
+          {AREAS.map((a) => (
+            <li key={a} className="rounded-md border border-linha bg-fundo/70 px-2.5 py-1 font-mono text-xs text-suave backdrop-blur-sm">
+              {a}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-9 flex flex-wrap gap-3">
+          <a
+            href={linkWhatsapp()}
+            onClick={(e) => (e.currentTarget.href = linkWhatsapp())}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-md bg-destaque px-4 py-2.5 text-sm font-medium text-fundo transition hover:opacity-90"
+          >
+            <WhatsappIcon size={16} /> Falar no WhatsApp
+          </a>
+          <a
+            href="#/projetos"
+            className="inline-flex items-center gap-2 rounded-md border border-linha bg-fundo/70 px-4 py-2.5 text-sm backdrop-blur-sm transition hover:border-destaque hover:text-destaque"
+          >
+            Ver projetos <ArrowDown size={15} />
+          </a>
         </div>
-        <Serial linhas={linhas} aoReiniciar={reiniciar} ligada={ligada} />
+
+        <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-apagado">
+          <span className="flex items-center gap-2">
+            <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" /> disponível para projetos
+          </span>
+          {dados && (
+            <>
+              <span>·</span>
+              <span>{dados.total.toLocaleString('pt-BR')} contribuições no GitHub em 12 meses</span>
+            </>
+          )}
+        </p>
+      </div>
+
+      <Telemetria cm={cm} commits={dados?.total} />
+    </div>
+  )
+}
+
+/** Faixa rolando com o tipo de coisa que eu automatizo e integro */
+function Telemetria({ cm, commits }: { cm: number; commits?: number }) {
+  const itens = [
+    ['esp32', `hc-sr04 ${cm.toFixed(1)} cm`],
+    ['mqtt', 'casa/sala/temperatura 24.3 °C'],
+    ['api', 'POST /webhooks/pedido 201'],
+    ['whatsapp', 'mensagem automática enviada'],
+    ['n8n', 'fluxo "novo-lead" executado'],
+    ['github', commits ? `${commits.toLocaleString('pt-BR')} contribuições/ano` : 'sincronizando'],
+    ['cron', 'backup do banco concluído'],
+    ['i2c', 'ssd1306 em 0x3C ok'],
+    ['pix', 'cobrança confirmada via webhook'],
+  ]
+  const faixa = itens.map(([tag, txt]) => (
+    <span key={tag} className="flex shrink-0 items-center gap-2 px-5">
+      <span className="text-destaque">[{tag}]</span> {txt}
+    </span>
+  ))
+  return (
+    <div
+      aria-hidden="true"
+      className="border-t border-linha/70 py-3 font-mono text-[11px] whitespace-nowrap text-apagado [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]"
+    >
+      <div className="faixa-telemetria flex w-max">
+        <div className="flex">{faixa}</div>
+        <div className="flex">{faixa}</div>
       </div>
     </div>
   )

@@ -1,13 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import { ArrowRight, ArrowUpRight, Check, Copy } from 'lucide-react'
-import { perfil } from '../data/perfil'
+import { linkWhatsapp, perfil } from '../data/perfil'
 import { grupos, projetos, projetosDoGrupo, type Projeto } from '../data/projetos'
 import { trajetoria } from '../data/trajetoria'
 import { useAtividade } from '../lib/atividade'
 import { periodo } from '../lib/datas'
 import { Capa } from './Capa'
 import { Contribuicoes } from './Contribuicoes'
-import { GithubIcon, LinkedinIcon } from './Icones'
+import { GithubIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { SECOES } from './Lateral'
 import { Onda } from './Onda'
 import { Pinagem } from './Pinagem'
@@ -207,14 +207,24 @@ function Contato() {
   return (
     <Secao id="contato" titulo="Contato">
       <p className="max-w-xl text-2xl leading-snug font-light tracking-tight sm:text-3xl">
-        Tem um sistema pra tirar do papel, uma integração ou uma automação? <span className="text-suave">Me manda uma mensagem.</span>
+        Tem um sistema pra tirar do papel, uma integração ou uma automação? <span className="text-suave">Me chama no WhatsApp.</span>
       </p>
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <a
-          href={`mailto:${perfil.contato.email}`}
+          href={linkWhatsapp()}
+          // a saudação (bom dia/boa tarde/boa noite) é montada na hora do clique
+          onClick={(e) => (e.currentTarget.href = linkWhatsapp())}
+          target="_blank"
+          rel="noreferrer"
           className="inline-flex items-center gap-2 rounded-md bg-destaque px-4 py-2.5 text-sm font-medium text-fundo transition hover:opacity-90"
         >
-          {perfil.contato.email} <ArrowUpRight size={16} />
+          <WhatsappIcon size={16} /> Chamar no WhatsApp <ArrowUpRight size={16} />
+        </a>
+        <a
+          href={`mailto:${perfil.contato.email}`}
+          className="inline-flex items-center gap-2 rounded-md border border-linha px-3.5 py-2.5 text-sm transition hover:border-destaque hover:text-destaque"
+        >
+          {perfil.contato.email}
         </a>
         <button
           onClick={copiar}

@@ -1,5 +1,16 @@
-// O lucide não tem mais ícones de marca; estes dois são os SVGs oficiais simplificados.
+// O lucide não tem mais ícones de marca; estes são os SVGs oficiais simplificados
+// (o do WhatsApp vem do pacote simple-icons).
+import { siWhatsapp } from 'simple-icons'
+
 type P = { size?: number; className?: string }
+
+export function WhatsappIcon({ size = 18, className }: P) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d={siWhatsapp.path} />
+    </svg>
+  )
+}
 
 export function GithubIcon({ size = 18, className }: P) {
   return (

@@ -204,3 +204,11 @@ button:not(:disabled),
     display: none;
   }
 }
+
+/* Faixa de telemetria da abertura */
+@keyframes rolar-telemetria {
+  to { transform: translateX(-50%); }
+}
+.faixa-telemetria {
+  animation: rolar-telemetria 70s linear infinite;
+}

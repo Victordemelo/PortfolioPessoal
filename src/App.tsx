@@ -3,7 +3,7 @@ import { ArrowUp } from 'lucide-react'
 import { perfil } from './data/perfil'
 import { projetos } from './data/projetos'
 import { useRota } from './lib/rota'
-import { Bancada } from './components/bancada/Bancada'
+import { Abertura } from './components/bancada/Bancada'
 import { Inicio } from './components/Inicio'
 import { BotaoTema, Lateral, SECOES } from './components/Lateral'
 import { Logo } from './components/Logo'
@@ -15,20 +15,27 @@ function useSecaoAtiva(ligado: boolean) {
   const [ativa, setAtiva] = useState<string | null>(null)
   useEffect(() => {
     if (!ligado) return
-    const visiveis = new Map<string, number>()
-    const obs = new IntersectionObserver(
-      (entradas) => {
-        for (const e of entradas) visiveis.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0)
-        const melhor = SECOES.map((s) => s.id).find((id) => (visiveis.get(id) ?? 0) > 0)
-        if (melhor) setAtiva(melhor)
-      },
-      { rootMargin: '-15% 0px -55% 0px', threshold: [0, 0.01] },
-    )
-    for (const s of SECOES) {
-      const el = document.getElementById(s.id)
-      if (el) obs.observe(el)
+    // Ativa = a última seção cujo topo já passou de 35% da altura da tela.
+    // No fim da página a última seção (Contato) é curta e nunca chega lá;
+    // então, encostou no fim, acende a última.
+    const atualizar = () => {
+      const fim = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8
+      if (fim) return setAtiva(SECOES[SECOES.length - 1].id)
+      const linha = window.innerHeight * 0.35
+      let atual: string | null = null
+      for (const s of SECOES) {
+        const el = document.getElementById(s.id)
+        if (el && el.getBoundingClientRect().top <= linha) atual = s.id
+      }
+      setAtiva(atual)
     }
-    return () => obs.disconnect()
+    atualizar()
+    window.addEventListener('scroll', atualizar, { passive: true })
+    window.addEventListener('resize', atualizar)
+    return () => {
+      window.removeEventListener('scroll', atualizar)
+      window.removeEventListener('resize', atualizar)
+    }
   }, [ligado])
   return ativa
 }
@@ -60,7 +67,7 @@ export default function App() {
   return (
     <>
       {!projeto && (
-        <header className="tapete border-b border-linha">
+        <header className="tapete overflow-hidden border-b border-linha">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
             <nav className="flex h-14 items-center justify-between border-b border-linha/70">
               <a href="#/" aria-label="Início" className="text-texto transition hover:text-destaque">
@@ -76,7 +83,7 @@ export default function App() {
                 <BotaoTema />
               </div>
             </nav>
-            <Bancada />
+            <Abertura />
           </div>
         </header>
       )}

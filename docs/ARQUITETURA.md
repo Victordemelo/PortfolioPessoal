@@ -3,7 +3,7 @@
 ## Requisitos
 
 **Funcionais**
-- Abertura com uma bancada eletrônica interativa: ESP32 numa protoboard com HC-SR04, display OLED, LED e servo (cancela), o firmware sendo digitado num editor e um monitor serial ao vivo. O sensor mede a distância até o cursor; abaixo de 30 cm a vaga fica ocupada, o LED acende e a cancela abre. O botão EN reinicia a placa.
+- Abertura com a apresentação em primeiro plano (quem sou, o que faço, botão para o WhatsApp com mensagem pronta) e, no fundo, uma bancada eletrônica animada: ESP32 numa protoboard com HC-SR04, display OLED, LED e servo. O sensor mede a distância até o cursor, o LED acende quando algo chega perto e o servo acompanha. Embaixo, uma faixa de telemetria com automações e integrações.
 - Depois da abertura, página no formato de ficha técnica (datasheet) de componente: no desktop, barra lateral fixa com perfil, "características" e índice numerado que acompanha a rolagem; à direita, as seções 01 Sobre, 02 Atividade (Figura 1, ao vivo), 03 Projetos, 04 Pinagem (Figura 2: a stack como um CI DIP-18), 05 Trajetória e 06 Contato. No celular, tudo vira uma coluna e a pinagem vira tabela de pinos.
 - Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`#/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
@@ -42,13 +42,11 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Peça | Arquivo | Papel |
 |---|---|---|
-| Bancada | `components/bancada/Bancada.tsx` | Estado da "placa": boot com atrasos reais (espera a resposta do GitHub até 5 s), depois um ponteiro de execução anda pelas linhas do `loop()` a cada 110 ms e cada linha tem efeito (`sonar.read` mede, `digitalWrite` acende o LED, `cancela.write` move o servo, `Serial.printf` escreve no monitor). Sem mouse (toque), a distância vem de um objeto simulado. |
+| Abertura | `components/bancada/Bancada.tsx` | Texto de apresentação sobre a placa (que fica atrás, esmaecida e sem receber clique). A cada 450 ms mede a distância até o cursor (ou de um objeto simulado, no toque), pisca o LED da placa e atualiza LED, servo e display. Faixa de telemetria rolando em CSS. |
 | Desenho da placa | `components/bancada/Placa.tsx` | SVG com as peças em cores reais; ondas do sonar e pulsos nos fios de dados em CSS, desligados com `prefers-reduced-motion`. |
-| Editor | `components/bancada/Editor.tsx`, `codigo.ts` | Digita o firmware e depois destaca a linha em execução; abas com TypeScript e PHP. Realce de sintaxe com um tokenizador de uma regex, sem biblioteca. |
-| Monitor serial | `components/bancada/Serial.tsx` | Log com etiquetas coloridas; só rola sozinho se a pessoa não subiu para ler. |
 | Traço lógico | `components/Onda.tsx` | Sinal digital rolando ao lado do título de cada seção. |
 | Barra lateral | `components/Lateral.tsx` | Perfil, tabela "Características" (status, local, hora com fuso relativo ao visitante, formação, e-mail), índice numerado e redes. Fixa (`sticky`) no desktop; no celular vira o topo da página. |
-| Índice ativo | `useSecaoAtiva` em `App.tsx` | `IntersectionObserver` nas seções para acender o item do índice que está na tela. |
+| Índice ativo | `useSecaoAtiva` em `App.tsx` | Na rolagem, a seção ativa é a última cujo topo passou de 35% da tela; encostou no fim da página, acende a última (Contato). |
 | Pinagem | `components/Pinagem.tsx` | A stack como um CI DIP-18 em SVG: pinos 1–9 descem à esquerda, 10–18 sobem à direita, 9 = GND e 18 = VCC. Hover ou foco no pino mostra a função e em quantos projetos a tecnologia aparece. No celular, tabela de pinos. |
 | Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG que escala com a coluna, 5 níveis de âmbar, dica no hover; no celular rola e começa nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
 | Página inicial | `components/Inicio.tsx` | As seis seções numeradas, na ordem. |
@@ -72,7 +70,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 ## Segurança e privacidade
 
-- Sem formulário e sem backend: o contato é `mailto:`, então não há endpoint para abusar.
+- Sem formulário e sem backend: o contato é por link do WhatsApp (`wa.me` com mensagem pronta) e `mailto:`, então não há endpoint para abusar.
 - Cabeçalhos no Caddy: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`.
 - Projetos da empresa não entram no portfólio; a categoria "Profissional" só aparece quando houver projeto nela.
 

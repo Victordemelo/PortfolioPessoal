@@ -1,17 +1,16 @@
 import type { Ref } from 'react'
 
 // A bancada desenhada em SVG: protoboard, ESP32 DevKit, HC-SR04, display OLED
-// SSD1306, LED com resistor e um servo SG90 fazendo papel de cancela.
+// SSD1306, LED com resistor e um servo SG90. Fica no fundo da abertura.
 // As cores das peças são as reais (não seguem o tema); só o fundo acompanha.
 
 type Props = {
   refSensor: Ref<SVGGElement>
   distancia: number
-  ocupada: boolean
+  ledAceso: boolean
   anguloServo: number
   ledPlaca: boolean
   oled: { linhas: string[]; barras: number[] }
-  aoReiniciar: () => void
   ligada: boolean
 }
 
@@ -40,7 +39,7 @@ function curva(x1: number, y1: number, x2: number, y2: number) {
   return `M${x1} ${y1} C${x1} ${meio}, ${x2} ${meio + 10}, ${x2} ${y2}`
 }
 
-export function Placa({ refSensor, distancia, ocupada, anguloServo, ledPlaca, oled, aoReiniciar, ligada }: Props) {
+export function Placa({ refSensor, distancia, ledAceso, anguloServo, ledPlaca, oled, ligada }: Props) {
   return (
     <svg viewBox="0 -40 640 432" className="h-auto w-full select-none" role="img" aria-label="Bancada com ESP32, sensor ultrassônico, display OLED, LED e servo">
       <defs>
@@ -87,11 +86,11 @@ export function Placa({ refSensor, distancia, ocupada, anguloServo, ledPlaca, ol
         <line x1="390" y1="324" x2="404" y2="324" stroke="#9aa0a6" strokeWidth="1.5" />
         <line x1="332" y1="312" x2="332" y2="334" stroke="#9aa0a6" strokeWidth="1.5" />
         <line x1="342" y1="312" x2="342" y2="324" stroke="#9aa0a6" strokeWidth="1.5" />
-        {ocupada && <circle cx="337" cy="302" r="16" fill="#ff3b30" opacity="0.55" filter="url(#brilho)" />}
-        <path d="M328 312 L328 300 A9 9 0 0 1 346 300 L346 312 Z" fill={ocupada ? '#ff4d3d' : '#7c2c27'} stroke="#5a1d19" strokeWidth="0.8" />
-        <rect x="326" y="310" width="22" height="3" rx="1" fill={ocupada ? '#ff6b5e' : '#6a2622'} />
+        {ledAceso && <circle cx="337" cy="302" r="16" fill="#ff3b30" opacity="0.55" filter="url(#brilho)" />}
+        <path d="M328 312 L328 300 A9 9 0 0 1 346 300 L346 312 Z" fill={ledAceso ? '#ff4d3d' : '#7c2c27'} stroke="#5a1d19" strokeWidth="0.8" />
+        <rect x="326" y="310" width="22" height="3" rx="1" fill={ledAceso ? '#ff6b5e' : '#6a2622'} />
         <text x="337" y="358" textAnchor="middle" className="fill-[#6d6a60] font-mono text-[9px]">
-          D1 · vaga
+          D1
         </text>
       </g>
 
@@ -125,9 +124,9 @@ export function Placa({ refSensor, distancia, ocupada, anguloServo, ledPlaca, ol
         {/* USB */}
         <rect x="238" y="278" width="18" height="24" rx="2" fill="url(#metal)" stroke="#7d848e" />
         {/* botões EN e BOOT */}
-        <g onClick={aoReiniciar} className="cursor-pointer" role="button" aria-label="Reiniciar a placa (EN)">
+        <g>
           <rect x="214" y="262" width="16" height="12" rx="1.5" fill="#d9dbde" stroke="#9aa0a6" />
-          <circle cx="222" cy="268" r="3.4" fill="#2a2f38" className="transition hover:fill-[#f5b83d]" />
+          <circle cx="222" cy="268" r="3.4" fill="#2a2f38" />
           <text x="222" y="258" textAnchor="middle" className="fill-[#cfd5df] font-mono text-[6.5px]">
             EN
           </text>
@@ -234,16 +233,14 @@ export function Placa({ refSensor, distancia, ocupada, anguloServo, ledPlaca, ol
           SG90
         </text>
         <circle cx="488" cy="170" r="9" fill="#e9ecef" stroke="#adb5bd" />
-        <g style={{ transform: `rotate(${anguloServo}deg)`, transformOrigin: '488px 170px', transition: 'transform 0.6s cubic-bezier(.3,1.4,.5,1)' }}>
-          <rect x="368" y="165" width="124" height="10" rx="5" fill="#ffffff" stroke="#9aa0a6" />
-          {[0, 1, 2, 3, 4].map((i) => (
-            <rect key={i} x={378 + i * 22} y="165" width="10" height="10" fill="#e5383b" />
+        {/* braço duplo do servo, girando conforme a distância medida */}
+        <g style={{ transform: `rotate(${anguloServo}deg)`, transformOrigin: '488px 170px', transition: 'transform 0.5s cubic-bezier(.3,1.3,.5,1)' }}>
+          <path d="M466 170 a5 5 0 0 1 5 -5 L505 165 a5 5 0 0 1 0 10 L471 175 a5 5 0 0 1 -5 -5 z" fill="#ffffff" stroke="#9aa0a6" />
+          {[472, 480, 496, 504].map((x) => (
+            <circle key={x} cx={x} cy="170" r="1.2" fill="#9aa0a6" />
           ))}
         </g>
         <circle cx="488" cy="170" r="3" fill="#6c757d" />
-        <text x="600" y="176" className="fill-apagado font-mono text-[8px]" textAnchor="end">
-          {anguloServo > 0 ? 'cancela aberta' : 'cancela fechada'}
-        </text>
       </g>
 
       {/* ─── Jumpers ──────────────────────────────────── */}

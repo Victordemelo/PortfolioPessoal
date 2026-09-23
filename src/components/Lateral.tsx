@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Mail, Moon, Sun } from 'lucide-react'
-import { perfil } from '../data/perfil'
-import { GithubIcon, LinkedinIcon } from './Icones'
+import { linkWhatsapp, perfil } from '../data/perfil'
+import { GithubIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { Logo } from './Logo'
 
 export const SECOES = [
@@ -147,6 +147,9 @@ export function Lateral({ ativo }: { ativo: string | null }) {
       </nav>
 
       <div className="flex gap-2 lg:mt-auto">
+        <Social href={linkWhatsapp()} rotulo="WhatsApp">
+          <WhatsappIcon size={16} />
+        </Social>
         <Social href={perfil.contato.github} rotulo="GitHub">
           <GithubIcon size={16} />
         </Social>
