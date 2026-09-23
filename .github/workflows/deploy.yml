@@ -34,9 +34,6 @@ jobs:
     name: Deploy no servidor
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: producao
-      url: https://victordemelo.com.br
     env:
       DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}

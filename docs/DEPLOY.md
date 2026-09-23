@@ -68,11 +68,11 @@ Em **github.com/Victordemelo/PortfolioPessoal → Settings → Secrets and varia
 | `DEPLOY_KNOWN_HOSTS` | a linha que o `ssh-keyscan` imprimiu |
 | `DEPLOY_PORT` | opcional; só se o SSH não estiver na 22 |
 
-O workflow usa o environment `producao` (criado sozinho no primeiro run). Se quiser aprovar cada deploy antes de rodar, ative **Required reviewers** em Settings → Environments → producao.
-
 ### 4. Testar
 
-Aba **Actions → Deploy → Run workflow**. Os três passos devem ficar verdes.
+Aba **Actions → Deploy → Run workflow**. Os dois jobs (Build e Deploy no servidor) devem ficar verdes.
+
+O repositório é privado: o Actions usa os minutos grátis da conta (2.000/mês no plano Free; cada deploy gasta cerca de 1 a 2 minutos).
 
 ## Deploy na mão (se o GitHub estiver fora)
 
