@@ -14,7 +14,7 @@
 **Não funcionais**
 - Sem backend e sem banco: nada para manter ou proteger além de arquivos estáticos.
 - Carregamento rápido; animações que respeitam `prefers-reduced-motion`.
-- HTTPS automático e deploy com um comando.
+- HTTPS no Nginx do servidor (Certbot) e deploy com um comando.
 - Conteúdo editável sem mexer em componente.
 
 **Premissas**
@@ -24,12 +24,17 @@
 ## Visão geral
 
 ```
-  build (máquina local ou CI)                     VPS
- ┌───────────────────────────┐      ┌──────────────────────────────┐
- │ src/data/*.ts  (conteúdo) │      │ container caddy:2-alpine     │
- │ src/components (UI)       │ ──▶  │  /srv  ← dist/ do Vite       │ ◀── HTTPS ── visitante
- │ vite build → dist/        │      │  TLS automático (Let's Enc.) │
- └───────────────────────────┘      └──────────────────────────────┘
+  visitante ──HTTPS──▶ Cloudflare (proxy, SSL Full strict)
+                             │
+                             ▼
+  VPS Oracle Cloud (Ubuntu 24.04 ARM64) ─ só 22, 80 e 443 abertas
+   ┌──────────────────────────────────────────────────────────┐
+   │ Nginx no host :443 (Certbot) ── real_ip via CF-Connecting-IP
+   │        │
+   │        ▼ 127.0.0.1:8080  (publicado só em localhost)
+   │ container /opt/apps/victordemelo: Caddy :80 → /srv (dist/ do Vite)
+   │   headers de segurança, cache, redirect www → domínio principal
+   └──────────────────────────────────────────────────────────┘
 
   No navegador do visitante (sem passar pelo servidor):
     github-contributions-api.jogruber.de  → calendário de contribuições (CORS liberado)
@@ -38,6 +43,12 @@
 ```
 
 O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final leva só o Caddy e os arquivos.
+
+Regras do container para conviver com o servidor:
+1. O Caddy não emite certificado nem escuta 443: `SITE_ADDRESS` é sempre `:80`, nunca o domínio.
+2. A porta é publicada só em localhost: `"127.0.0.1:${HTTP_PORT:-8088}:80"` (o Docker ignora o firewall do host quando publica em `0.0.0.0`).
+3. `.env` do servidor, fora do Git: `SITE_ADDRESS=:80` e `HTTP_PORT=8080`. Local continua em `http://localhost:8088`.
+4. Deploy: `git pull && docker compose up -d --build` em `/opt/apps/victordemelo` (clonado com Deploy Key só leitura).
 
 ## Componentes
 
@@ -71,7 +82,7 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | **Commits privados só como número** | O calendário conta contribuições privadas (com a opção ligada no perfil) sem expor nome de repositório | Não dá para dizer em qual projeto privado foi o commit |
 | **SVG desenhado à mão** (pinagem, calendário) em vez de biblioteca de gráficos | Traço nítido em qualquer resolução, segue o tema via variáveis CSS, sem dependência | Mais código próprio para manter |
 | **Barra lateral fixa** no desktop | Ocupa a largura da tela e deixa perfil e navegação sempre à mão | Em telas entre 1024 e 1200 px a coluna de conteúdo fica mais estreita |
-| **Caddy** em vez de Nginx | HTTPS automático sem certbot; config curta | — |
+| **Caddy dentro do container, atrás do Nginx do servidor** | O Nginx + Certbot já cuidam do HTTPS de todos os apps do servidor; o Caddy só serve os arquivos com headers, cache e redirect de www, que ficam versionados junto com o site | Dois servidores web na frente de um site estático; o modo "Caddy sozinho com HTTPS" deixou de ser suportado |
 
 ## Segurança e privacidade
 

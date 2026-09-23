@@ -3,13 +3,14 @@ services:
     build: .
     restart: unless-stopped
     environment:
+      # Sempre ":80": o Caddy só serve HTTP interno. Em produção o HTTPS é do
+      # Nginx + Certbot do servidor (ver docs/ARQUITETURA.md)
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
     ports:
-      - "${HTTP_PORT:-8088}:80"
-      - "${HTTPS_PORT:-8448}:443"
-      - "${HTTPS_PORT:-8448}:443/udp"
+      # Só em localhost: publicar em 0.0.0.0 faria o Docker furar o firewall
+      # do host. Em produção quem alcança esta porta é o Nginx do servidor.
+      - "127.0.0.1:${HTTP_PORT:-8088}:80"
     volumes:
-      # Guarda os certificados do Let's Encrypt entre um deploy e outro
       - caddy_data:/data
       - caddy_config:/config
 

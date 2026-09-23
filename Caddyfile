@@ -1,5 +1,7 @@
-# SITE_ADDRESS vem do .env. Em produção: "victordemelo.com.br, www.victordemelo.com.br"
-# (o Caddy emite o HTTPS dos dois sozinho); sem ele, serve em http://localhost.
+# O Caddy só serve HTTP interno na porta 80 do container (SITE_ADDRESS=":80",
+# nunca o domínio). Em produção fica atrás do Nginx do servidor, que faz o
+# HTTPS com Certbot e repassa o Host original; por isso o redirect de www abaixo
+# continua funcionando.
 {$SITE_ADDRESS::80} {
 	root * /srv
 	encode zstd gzip

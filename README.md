@@ -35,13 +35,29 @@ docker compose up -d --build
 
 Abre em http://localhost:8088.
 
-## Publicar numa VPS
+## Produção
 
-1. Aponte o domínio (registro A) para o IP da VPS.
-2. No `.env`, defina `SITE_ADDRESS=victordemelo.com.br, www.victordemelo.com.br`, `HTTP_PORT=80` e `HTTPS_PORT=443`. O `www` redireciona para o domínio principal.
-3. Rode `docker compose up -d --build`. O Caddy emite o certificado HTTPS sozinho.
+```
+Visitante → Cloudflare (proxy, SSL Full strict) → Nginx do servidor (443, Certbot)
+          → 127.0.0.1:8080 → container (Caddy na porta 80) → arquivos estáticos
+```
 
-Para atualizar: `git pull && docker compose up -d --build`.
+O HTTPS é do Nginx + Certbot do servidor; o Caddy só serve HTTP interno e a porta é publicada apenas em `127.0.0.1` (o Docker ignora o firewall do host se publicar em `0.0.0.0`).
+
+`.env` do servidor (não versionado):
+
+```bash
+SITE_ADDRESS=:80
+HTTP_PORT=8080
+```
+
+Deploy, com o repositório em `/opt/apps/victordemelo`:
+
+```bash
+cd /opt/apps/victordemelo && git pull && docker compose up -d --build
+```
+
+Teste interno: `curl -I http://127.0.0.1:8080` deve responder `200 OK`.
 
 A decisão de arquitetura está em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
