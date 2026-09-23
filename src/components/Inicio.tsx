@@ -8,7 +8,7 @@ import { dataCurta, periodo } from '../lib/datas'
 import { ultimaAtividade, useUltimosPushes } from '../lib/repos'
 import { CapaProjeto } from './Capas'
 import { Contribuicoes } from './Contribuicoes'
-import { GithubIcon, LinkedinIcon, WhatsappIcon } from './Icones'
+import { GithubIcon, InstagramIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { SECOES } from './Lateral'
 import { Onda } from './Onda'
 import { Pinagem } from './Pinagem'
@@ -116,8 +116,8 @@ export function QuandoProjeto({ p, pushes }: { p: Projeto; pushes: Record<string
 function LinhaProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string> }) {
   return (
     <li>
-      <a href={`#/projetos/${p.id}`} className="group grid gap-4 border-b border-linha py-5 sm:grid-cols-[184px_1fr] sm:gap-6">
-        <div className="self-start overflow-hidden rounded-md border border-linha transition group-hover:border-destaque/60">
+      <a href={`/projetos/${p.id}`} className="group grid items-start gap-4 border-b border-linha py-5 sm:grid-cols-[184px_1fr] sm:gap-6">
+        <div className="h-fit self-start overflow-hidden rounded-md border border-linha transition group-hover:border-destaque/60">
           {p.imagem ? (
             <img src={p.imagem} alt="" loading="lazy" className="foto-pb aspect-[16/10] w-full object-cover" />
           ) : (
@@ -313,6 +313,14 @@ function Contato() {
           className="inline-flex items-center gap-2 rounded-md border border-linha px-3.5 py-2.5 text-sm transition hover:border-destaque hover:text-destaque"
         >
           <GithubIcon size={15} /> GitHub
+        </a>
+        <a
+          href={perfil.contato.instagram}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 rounded-md border border-linha px-3.5 py-2.5 text-sm transition hover:border-destaque hover:text-destaque"
+        >
+          <InstagramIcon size={15} /> Instagram
         </a>
       </div>
     </Secao>

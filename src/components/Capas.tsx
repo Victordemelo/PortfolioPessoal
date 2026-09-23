@@ -97,23 +97,22 @@ function FluxoAgentes() {
   const x = (i: number) => 44 + i * 78
   return (
     <Moldura rotulo="Capa do Fluxo de Agentes: esteira arquiteto, você, executor, checks e revisor">
-      <path id="esteira" d={`M${x(0)} 118 H${x(4)}`} stroke="var(--linha)" strokeWidth="2" />
+      {/* esteira: cada trecho acende logo depois da etapa de onde sai */}
+      {etapas.slice(0, -1).map((e, i) => (
+        <line key={e} x1={x(i) + 22} y1="118" x2={x(i + 1) - 22} y2="118" strokeWidth="2" className="seg-fluxo" style={{ animationDelay: `${i}s` }} />
+      ))}
+      {/* as etapas acendem uma de cada vez, 1 s cada, em ciclo de 5 s */}
       {etapas.map((e, i) => (
         <g key={e}>
-          <circle cx={x(i)} cy="118" r="22" fill="var(--fundo)" stroke={i === 1 ? 'var(--destaque)' : 'var(--apagado)'} strokeWidth="1.5" />
-          <text x={x(i)} y="123" textAnchor="middle" className={`font-mono text-[13px] ${i === 1 ? 'fill-destaque' : 'fill-suave'}`}>
+          <circle cx={x(i)} cy="118" r="22" strokeWidth="1.5" className="no-fluxo" style={{ animationDelay: `${i}s` }} />
+          <text x={x(i)} y="123" textAnchor="middle" className="txt-fluxo font-mono text-[13px]" style={{ animationDelay: `${i}s` }}>
             {['A', '✓', 'E', '▶', 'R'][i]}
           </text>
-          <text x={x(i)} y="160" textAnchor="middle" className="fill-suave font-mono text-[9.5px]">
+          <text x={x(i)} y="160" textAnchor="middle" className="txt-fluxo font-mono text-[9.5px]" style={{ animationDelay: `${i}s` }}>
             {e}
           </text>
         </g>
       ))}
-      <circle r="4" fill="var(--destaque)" className="so-com-movimento">
-        <animateMotion dur="4s" repeatCount="indefinite">
-          <mpath href="#esteira" />
-        </animateMotion>
-      </circle>
       <text x="200" y="62" textAnchor="middle" className="fill-apagado font-mono text-[10px]">
         $ ./agente "nova feature"
       </text>

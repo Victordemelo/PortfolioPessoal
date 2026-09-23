@@ -120,7 +120,7 @@ export function Abertura() {
             <WhatsappIcon size={16} /> Falar no WhatsApp
           </a>
           <a
-            href="#/projetos"
+            href="/#projetos"
             className="inline-flex items-center gap-2 rounded-md border border-linha bg-fundo/70 px-4 py-2.5 text-sm backdrop-blur-sm transition hover:border-destaque hover:text-destaque"
           >
             Ver projetos <ArrowDown size={15} />

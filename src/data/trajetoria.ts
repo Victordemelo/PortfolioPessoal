@@ -48,18 +48,19 @@ export const trajetoria: Etapa[] = [
 export const anteriores = [
   { titulo: 'Apoio administrativo I', lugar: 'Grupo Orbenk', periodo: 'dez 2023 → out 2025' },
   { titulo: 'Recepcionista', lugar: 'Elmo · Empresa Litorânea de Mão de Obra', periodo: 'jan 2022 → dez 2023' },
-  { titulo: 'Auxiliar administrativo (estágio)', lugar: 'Unimed Grande Florianópolis', periodo: '' },
+  { titulo: 'Auxiliar administrativo (estágio)', lugar: 'Unimed Grande Florianópolis', periodo: 'mar 2021 → dez 2021' },
 ]
 
 export const certificados = [
   { nome: 'Versionamento de Código com Git e GitHub', emissor: 'DIO', data: 'jun 2025' },
-  { nome: 'Network Defense', emissor: 'Cisco Networking Academy' },
-  { nome: 'Oficina Arduino', emissor: 'Unisul' },
+  { nome: 'Network Defense', emissor: 'Cisco Networking Academy', data: 'mai 2025' },
+  { nome: 'Oficina Arduino', emissor: 'Unisul', data: 'mai 2025' },
+  { nome: 'Linguagem de Programação Python', emissor: 'Fundação Bradesco', data: 'abr 2025' },
+  { nome: 'Java Foundations (JFo)', emissor: 'Oracle', data: 'nov 2024' },
+  { nome: 'Java Fundamentals (JF)', emissor: 'Oracle', data: 'nov 2024' },
+  { nome: 'Cybersecurity Essentials', emissor: 'Cisco Networking Academy' },
   { nome: 'Scratch: programação visual e IoT', emissor: 'Unisul' },
   { nome: 'Análise de Dados e Programação em Python', emissor: 'Unisul' },
-  { nome: 'Linguagem de Programação Python', emissor: 'Fundação Bradesco' },
-  { nome: 'Java Foundations (JFo)', emissor: 'Oracle Academy' },
-  { nome: 'Java Fundamentals (JF)', emissor: 'Oracle Academy' },
 ]
 
 export const idiomas = [

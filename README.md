@@ -38,9 +38,15 @@ Abre em http://localhost:8088.
 ## Publicar numa VPS
 
 1. Aponte o domínio (registro A) para o IP da VPS.
-2. No `.env`, defina `SITE_ADDRESS=seudominio.com.br`, `HTTP_PORT=80` e `HTTPS_PORT=443`.
+2. No `.env`, defina `SITE_ADDRESS=victordemelo.com.br, www.victordemelo.com.br`, `HTTP_PORT=80` e `HTTPS_PORT=443`. O `www` redireciona para o domínio principal.
 3. Rode `docker compose up -d --build`. O Caddy emite o certificado HTTPS sozinho.
 
 Para atualizar: `git pull && docker compose up -d --build`.
 
 A decisão de arquitetura está em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
+
+## SEO
+
+O build gera, a partir de `src/data`: título, descrição, link canônico, Open Graph e JSON-LD de cada página, uma página pronta para cada projeto em `/projetos/<id>`, `robots.txt` e `sitemap.xml` (ver `seo.ts`). O domínio fica em `perfil.site`.
+
+Depois de publicar: cadastre o site no [Google Search Console](https://search.google.com/search-console), envie `https://victordemelo.com.br/sitemap.xml` e coloque o link do site no LinkedIn, GitHub e Instagram.

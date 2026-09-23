@@ -52,7 +52,7 @@ function useRolou(limite: number) {
 }
 
 export default function App() {
-  // Rotas: #/ (início), #/<seção> (início rolado até ela) e #/projetos/<id>
+  // Rotas: / (início, seções por âncora /#secao) e /projetos/<id> (ver lib/rota.ts)
   const rota = useRota()
   const projeto = rota.painel === 'projetos' && rota.item ? projetos.find((p) => p.id === rota.item) : undefined
   const ativa = useSecaoAtiva(!projeto)
@@ -61,8 +61,8 @@ export default function App() {
   useEffect(() => {
     document.title = projeto ? `${projeto.nome} · ${perfil.nome}` : `${perfil.nome} · ${perfil.titulo}`
     if (projeto) window.scrollTo({ top: 0, behavior: 'instant' })
-    else if (rota.painel) requestAnimationFrame(() => document.getElementById(rota.painel!)?.scrollIntoView())
-  }, [projeto, rota.painel])
+    else if (window.location.hash) requestAnimationFrame(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView())
+  }, [projeto])
 
   return (
     <>
@@ -70,12 +70,12 @@ export default function App() {
         <header className="tapete overflow-hidden border-b border-linha">
           <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
             <nav className="flex h-14 items-center justify-between border-b border-linha/70">
-              <a href="#/" aria-label="Início" className="text-texto transition hover:text-destaque">
+              <a href="/" aria-label="Início" className="text-texto transition hover:text-destaque">
                 <Logo className="h-5" />
               </a>
               <div className="flex items-center gap-1 text-sm">
                 {SECOES.filter((s) => s.id !== 'sobre').map((s) => (
-                  <a key={s.id} href={`#/${s.id}`} className="hidden rounded-md px-2.5 py-1 text-suave transition hover:text-destaque md:block">
+                  <a key={s.id} href={`/#${s.id}`} className="hidden rounded-md px-2.5 py-1 text-suave transition hover:text-destaque md:block">
                     {s.rotulo}
                   </a>
                 ))}

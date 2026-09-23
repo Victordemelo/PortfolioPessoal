@@ -3,26 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Victor de Melo da Rosa · Desenvolvedor de Software</title>
-    <meta
-      name="description"
-      content="Portfólio de Victor de Melo da Rosa: desenvolvedor de software em Florianópolis. Sistemas web, automações e integrações, até o hardware: ESP32, Arduino, sensores e IoT."
-    />
-    <meta name="theme-color" content="#0e0f11" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Victor de Melo da Rosa · Desenvolvedor de Software" />
-    <meta
-      property="og:description"
-      content="Sistemas web, automações e integrações, do servidor ao microcontrolador."
-    />
-    <meta property="og:image" content="https://avatars.githubusercontent.com/u/147112756?v=4" />
+    <!-- título, descrição, canônico, Open Graph e JSON-LD: gerados por seo.ts no build -->
+    <!--seo:head--><!--/seo:head-->
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e0f11" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f3ee" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300..700&display=swap"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://avatars.githubusercontent.com" />
     <script>
       // Aplica o tema antes do primeiro paint para não piscar
       try {
@@ -34,7 +28,9 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- o conteúdo em HTML puro (para buscadores e para quem está sem JS) é gerado
+         por seo.ts; o React substitui ao iniciar -->
+    <div id="root"><!--seo:corpo--><!--/seo:corpo--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

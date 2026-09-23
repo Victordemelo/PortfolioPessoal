@@ -46,7 +46,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
 
   return (
     <article className="py-8 lg:py-10">
-      <a href="#/projetos" className="inline-flex items-center gap-1.5 font-mono text-xs text-suave transition hover:text-destaque">
+      <a href="/#projetos" className="inline-flex items-center gap-1.5 font-mono text-xs text-suave transition hover:text-destaque">
         <ArrowLeft size={14} /> todos os projetos
       </a>
 
@@ -120,13 +120,13 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
       </div>
 
       <nav className="mt-14 grid grid-cols-2 gap-3">
-        <a href={`#/projetos/${anterior.id}`} className="group rounded-lg border border-linha p-4 transition hover:border-destaque">
+        <a href={`/projetos/${anterior.id}`} className="group rounded-lg border border-linha p-4 transition hover:border-destaque">
           <span className="flex items-center gap-1 font-mono text-xs text-apagado">
             <ArrowLeft size={13} className="transition group-hover:-translate-x-0.5" /> anterior
           </span>
           <span className="mt-1 block font-medium">{anterior.nome}</span>
         </a>
-        <a href={`#/projetos/${proximo.id}`} className="group rounded-lg border border-linha p-4 text-right transition hover:border-destaque">
+        <a href={`/projetos/${proximo.id}`} className="group rounded-lg border border-linha p-4 text-right transition hover:border-destaque">
           <span className="flex items-center justify-end gap-1 font-mono text-xs text-apagado">
             próximo <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
           </span>

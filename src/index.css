@@ -212,3 +212,31 @@ button:not(:disabled),
 .faixa-telemetria {
   animation: rolar-telemetria 70s linear infinite;
 }
+
+/* Capa do Fluxo de Agentes: etapas acendendo em sequência (ciclo de 5 s, 1 s cada) */
+@keyframes fluxo-no {
+  0%, 18% { stroke: var(--destaque); fill: color-mix(in oklab, var(--destaque) 20%, var(--fundo)); }
+  22%, 100% { stroke: var(--apagado); fill: var(--fundo); }
+}
+@keyframes fluxo-txt {
+  0%, 18% { fill: var(--destaque); }
+  22%, 100% { fill: var(--suave); }
+}
+@keyframes fluxo-seg {
+  0%, 12% { stroke: var(--linha); }
+  16%, 24% { stroke: var(--destaque); }
+  28%, 100% { stroke: var(--linha); }
+}
+.no-fluxo {
+  stroke: var(--apagado);
+  fill: var(--fundo);
+  animation: fluxo-no 5s linear infinite;
+}
+.txt-fluxo {
+  fill: var(--suave);
+  animation: fluxo-txt 5s linear infinite;
+}
+.seg-fluxo {
+  stroke: var(--linha);
+  animation: fluxo-seg 5s linear infinite;
+}

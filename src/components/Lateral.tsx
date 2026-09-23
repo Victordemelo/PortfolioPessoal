@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Mail, Moon, Sun } from 'lucide-react'
 import { linkWhatsapp, perfil } from '../data/perfil'
-import { GithubIcon, LinkedinIcon, WhatsappIcon } from './Icones'
+import { GithubIcon, InstagramIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { Logo } from './Logo'
 
 export const SECOES = [
@@ -51,7 +51,7 @@ export function BotaoTema() {
 
 function Linha({ k, children }: { k: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[4.25rem_1fr] gap-3 border-b border-linha py-2 last:border-0">
+    <div className="grid grid-cols-[4.25rem_1fr] items-center gap-3 border-b border-linha py-2 last:border-0">
       <dt className="font-mono text-[11px] tracking-wider text-apagado uppercase">{k}</dt>
       <dd className="min-w-0 text-sm [&>a]:break-all">{children}</dd>
     </div>
@@ -77,7 +77,7 @@ export function Lateral({ ativo }: { ativo: string | null }) {
   return (
     <aside className="flex flex-col gap-7 pt-6 pb-4 lg:sticky lg:top-0 lg:h-svh lg:overflow-y-auto lg:py-10">
       <div className="flex items-center justify-between">
-        <a href="#/" aria-label="Início" onClick={() => window.scrollTo({ top: 0 })} className="text-texto transition hover:text-destaque">
+        <a href="/" aria-label="Início" onClick={() => window.scrollTo({ top: 0 })} className="text-texto transition hover:text-destaque">
           <Logo className="h-5" />
         </a>
         <BotaoTema />
@@ -119,8 +119,7 @@ export function Lateral({ ativo }: { ativo: string | null }) {
             return (
               <li key={s.id}>
                 <a
-                  href={`#/${s.id}`}
-                  onClick={() => window.location.hash === `#/${s.id}` && document.getElementById(s.id)?.scrollIntoView()}
+                  href={`/#${s.id}`}
                   className={`group flex items-center gap-3 rounded-md py-1.5 text-sm transition ${on ? 'text-texto' : 'text-suave hover:text-texto'}`}
                 >
                   <span className={`font-mono text-[11px] ${on ? 'text-destaque' : 'text-apagado'}`}>{String(i + 1).padStart(2, '0')}</span>
@@ -142,6 +141,9 @@ export function Lateral({ ativo }: { ativo: string | null }) {
         </Social>
         <Social href={perfil.contato.linkedin} rotulo="LinkedIn">
           <LinkedinIcon size={16} />
+        </Social>
+        <Social href={perfil.contato.instagram} rotulo="Instagram">
+          <InstagramIcon size={16} />
         </Social>
         <Social href={`mailto:${perfil.contato.email}`} rotulo="E-mail">
           <Mail size={16} />

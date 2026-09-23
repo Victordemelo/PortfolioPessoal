@@ -3,6 +3,7 @@
 
 export const perfil = {
   nome: 'Victor de Melo da Rosa',
+  site: 'https://victordemelo.com.br',
   nomeCurto: 'Victor',
   github: 'Victordemelo',
   titulo: 'Desenvolvedor de software',
@@ -24,6 +25,7 @@ export const perfil = {
     github: 'https://github.com/Victordemelo',
     linkedin: 'https://www.linkedin.com/in/victor-de-melo-da-rosa/',
     whatsapp: '5548988078029',
+    instagram: 'https://www.instagram.com/victor.di.melo/',
   },
 }
 

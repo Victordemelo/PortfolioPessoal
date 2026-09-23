@@ -1,8 +1,12 @@
-# SITE_ADDRESS vem do .env. Com um domínio (ex.: victordemelo.dev) o Caddy
-# emite o HTTPS sozinho; sem ele, serve em http://localhost.
+# SITE_ADDRESS vem do .env. Em produção: "victordemelo.com.br, www.victordemelo.com.br"
+# (o Caddy emite o HTTPS dos dois sozinho); sem ele, serve em http://localhost.
 {$SITE_ADDRESS::80} {
 	root * /srv
 	encode zstd gzip
+
+	# www → domínio principal, para o Google ver um endereço só
+	@www header_regexp www Host ^www\.(.+)$
+	redir @www https://{re.www.1}{uri} permanent
 
 	header {
 		X-Content-Type-Options nosniff
@@ -16,10 +20,16 @@
 	@assets path /assets/*
 	header @assets Cache-Control "public, max-age=31536000, immutable"
 
-	# O index.html sempre revalida, para o deploy novo aparecer na hora
-	@html path / /index.html
+	# Imagens e ícones de public/: um dia
+	@estaticos path *.png *.svg *.webmanifest
+	header @estaticos Cache-Control "public, max-age=86400"
+
+	# HTML, robots e sitemap sempre revalidam, para o deploy novo aparecer na hora
+	@html not path /assets/* *.png *.svg *.webmanifest
 	header @html Cache-Control "no-cache"
 
-	try_files {path} /index.html
+	# /projetos/<id> tem página própria gerada no build (projetos/<id>/index.html);
+	# qualquer outro caminho cai no index.html
+	try_files {path} {path}/index.html /index.html
 	file_server
 }

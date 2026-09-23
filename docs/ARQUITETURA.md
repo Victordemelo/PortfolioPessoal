@@ -5,9 +5,10 @@
 **Funcionais**
 - Abertura com a apresentação em primeiro plano (quem sou, o que faço, botão para o WhatsApp com mensagem pronta) e, no fundo, uma bancada eletrônica animada: ESP32 numa protoboard com HC-SR04, display OLED, LED e servo. O sensor mede a distância até o cursor, o LED acende quando algo chega perto e o servo acompanha. Embaixo, uma faixa de telemetria com automações e integrações.
 - Depois da abertura, página no formato de ficha técnica (datasheet) de componente: no desktop, barra lateral fixa com perfil, "características" e índice numerado que acompanha a rolagem; à direita, as seções 01 Sobre, 02 Atividade (Figura 1, ao vivo), 03 Projetos, 04 Pinagem (Figura 2: a stack como um CI DIP-18), 05 Trajetória e 06 Contato. No celular, tudo vira uma coluna e a pinagem vira tabela de pinos.
-- Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`#/projetos/<id>`), com anterior/próximo.
+- Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
-- Links diretos para seções (`#/stack`) e botão voltar funcionando.
+- Links diretos para seções (`/#stack`) e botão voltar funcionando.
+- SEO: cada página com título, descrição, canônico, Open Graph e JSON-LD próprios; conteúdo em HTML puro antes do JS; `robots.txt` e `sitemap.xml`.
 - Tema claro e escuro; funciona no celular.
 
 **Não funcionais**
@@ -51,7 +52,9 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | Contribuições | `components/Contribuicoes.tsx`, `lib/atividade.ts` | Calendário do último ano em SVG que escala com a coluna, 5 níveis de âmbar, dica no hover; no celular rola e começa nas semanas recentes. Cache de 5 min e nova busca a cada 5 min com a aba visível. |
 | Página inicial | `components/Inicio.tsx` | As seis seções numeradas, na ordem. |
 | Página de projeto | `components/PaginaProjeto.tsx` | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
-| Rotas | `lib/rota.ts` | Hash (`#/secao` ou `#/projetos/<id>`): funciona em qualquer servidor estático. |
+| Rotas | `lib/rota.ts` | Caminhos de verdade (`/projetos/<id>`) para cada projeto ser indexável; seções por âncora (`/#projetos`). Cliques em links internos são interceptados (sem recarregar); links antigos com `#/` são convertidos. |
+| SEO | `seo.ts` (plugin do Vite) | No build, a partir de `src/data`: `<head>` de cada página (título, descrição, canônico, Open Graph, Twitter, JSON-LD `Person`/`ProfilePage`/`SoftwareSourceCode` com `sameAs` para GitHub, LinkedIn, Instagram e WhatsApp), conteúdo em HTML puro dentro do `#root`, `projetos/<id>/index.html` pré-gerado, `robots.txt` e `sitemap.xml`. O domínio vem de `perfil.site`. |
+| Imagens de compartilhamento | `public/og.png`, ícones | Prévia 1200×630 e ícones (192, 512, Apple) renderizados a partir de HTML; `site.webmanifest` para instalar no celular. |
 | Capas dos projetos | `components/Capas.tsx` | Uma ilustração SVG por projeto, desenhada a partir do que o repositório faz (Remote Wake com a marca do app, StabilMoney com o logo em `public/capas/`, esteira do Fluxo de Agentes, painel do BigData, janela do Gerenciador de Empréstimos). |
 | Capa genérica | `components/Capa.tsx` | Trecho de placa gerado do id, para projeto novo que ainda não tem capa própria. |
 | Última atividade | `lib/repos.ts` | Data do último push de cada repositório público (API do GitHub, cache de 10 min); projeto em andamento mostra "última atividade em DD/MM/AAAA". Privado usa `ultimaAtividade` do arquivo de dados. |
