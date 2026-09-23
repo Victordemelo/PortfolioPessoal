@@ -13,6 +13,8 @@ export type Projeto = {
   /** Período de execução. `fim: 'atual'` = em andamento; sem `fim` = um mês só */
   inicio: Mes
   fim?: Mes | 'atual'
+  /** Último commit (AAAA-MM-DD). Para repositório público a data vem ao vivo do GitHub; esta é a reserva */
+  ultimaAtividade?: string
   /** Site em produção */
   noAr?: string
   /** Repositório público */
@@ -55,6 +57,7 @@ export const projetos: Projeto[] = [
     categoria: 'pessoal',
     inicio: '2026-09',
     fim: 'atual',
+    ultimaAtividade: '2026-09-22',
     repo: `${GH}/wake-on-lan`,
     resumo:
       'Plataforma self-hosted para ligar computadores remotamente por Wake-on-LAN, dentro e fora de casa, com PWA instalável e API autenticada.',
@@ -72,6 +75,7 @@ export const projetos: Projeto[] = [
     contexto: 'Ferramenta de IA',
     categoria: 'pessoal',
     inicio: '2026-09',
+    ultimaAtividade: '2026-09-17',
     resumo:
       'Uma pasta que se coloca em qualquer projeto para rodar um time de IAs pelo terminal: o arquiteto planeja, você aprova, o executor implementa, checks sem IA validam e um revisor diferente dá o veredito.',
     destaques: [
@@ -89,6 +93,7 @@ export const projetos: Projeto[] = [
     categoria: 'pessoal',
     inicio: '2026-03',
     fim: 'atual',
+    ultimaAtividade: '2026-09-17',
     repo: `${GH}/StabilMoney`,
     resumo:
       'App de finanças para a família toda: receitas, despesas, cartões, contas fixas, metas e investimentos. Separa o dinheiro que está na conta do que já está comprometido, e não deixa gastar o que não existe.',

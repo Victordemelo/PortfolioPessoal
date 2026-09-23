@@ -9,7 +9,7 @@ export function mesAno(aaaamm: string) {
 
 export function periodo(p: Pick<Projeto, 'inicio' | 'fim'>) {
   if (!p.fim) return mesAno(p.inicio)
-  if (p.fim === 'atual') return `${mesAno(p.inicio)} → agora`
+  if (p.fim === 'atual') return `desde ${mesAno(p.inicio)}`
   const [ai] = p.inicio.split('-')
   const [af] = p.fim.split('-')
   // mesmo ano: "mar → set 2026"
@@ -36,4 +36,10 @@ export function haQuanto(data: Date | string | number, agora = Date.now()) {
     v /= div
   }
   return ''
+}
+
+/** AAAA-MM-DD → DD/MM/AAAA */
+export function dataCurta(iso: string) {
+  const [a, m, d] = iso.split('-')
+  return `${d}/${m}/${a}`
 }

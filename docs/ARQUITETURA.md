@@ -52,7 +52,9 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 | Página inicial | `components/Inicio.tsx` | As seis seções numeradas, na ordem. |
 | Página de projeto | `components/PaginaProjeto.tsx` | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
 | Rotas | `lib/rota.ts` | Hash (`#/secao` ou `#/projetos/<id>`): funciona em qualquer servidor estático. |
-| Capas geradas | `components/Capa.tsx` | Trecho de placa em SVG gerado do id do projeto, para quem não tem foto. |
+| Capas dos projetos | `components/Capas.tsx` | Uma ilustração SVG por projeto, desenhada a partir do que o repositório faz (Remote Wake com a marca do app, StabilMoney com o logo em `public/capas/`, esteira do Fluxo de Agentes, painel do BigData, janela do Gerenciador de Empréstimos). |
+| Capa genérica | `components/Capa.tsx` | Trecho de placa gerado do id, para projeto novo que ainda não tem capa própria. |
+| Última atividade | `lib/repos.ts` | Data do último push de cada repositório público (API do GitHub, cache de 10 min); projeto em andamento mostra "última atividade em DD/MM/AAAA". Privado usa `ultimaAtividade` do arquivo de dados. |
 | Ícones da stack | `data/stack.ts` | Caminhos SVG do pacote simple-icons, em currentColor (monocromático nos dois temas). |
 
 ## Decisões e trade-offs

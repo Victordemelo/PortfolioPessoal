@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { grupos, projetosOrdenados, type Projeto } from '../data/projetos'
-import { periodo } from '../lib/datas'
-import { Capa } from './Capa'
+import { dataCurta, mesAno, periodo } from '../lib/datas'
+import { ultimaAtividade, useUltimosPushes } from '../lib/repos'
+import { CapaProjeto } from './Capas'
 import { GithubIcon } from './Icones'
 
 function Bloco({ titulo, children }: { titulo: string; children: ReactNode }) {
@@ -19,6 +20,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
   const anterior = projetosOrdenados[(i - 1 + projetosOrdenados.length) % projetosOrdenados.length]
   const proximo = projetosOrdenados[(i + 1) % projetosOrdenados.length]
   const grupo = grupos.find((g) => g.id === p.categoria)
+  const ultima = ultimaAtividade(p, useUltimosPushes())
 
   const links = [
     p.noAr && { href: p.noAr, rotulo: 'Acessar o site', icone: <ArrowUpRight size={16} /> },
@@ -26,12 +28,21 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
     p.extra && { href: p.extra.url, rotulo: p.extra.rotulo, icone: <ArrowUpRight size={16} /> },
   ].filter(Boolean) as { href: string; rotulo: string; icone: ReactNode }[]
 
-  const ficha = [
-    ['categoria', grupo?.titulo ?? ''],
-    ['execução', periodo(p)],
-    ['status', p.fim === 'atual' ? 'em andamento' : 'concluído'],
-    ['código', p.repo ? 'público' : 'privado'],
-  ]
+  // Em andamento: início + última atividade (o "status" já está implícito)
+  const ficha =
+    p.fim === 'atual'
+      ? [
+          ['categoria', grupo?.titulo ?? ''],
+          ['início', mesAno(p.inicio)],
+          ['última atividade', ultima ? dataCurta(ultima) : 'em andamento'],
+          ['código', p.repo ? 'público' : 'privado'],
+        ]
+      : [
+          ['categoria', grupo?.titulo ?? ''],
+          ['execução', periodo(p)],
+          ['status', 'concluído'],
+          ['código', p.repo ? 'público' : 'privado'],
+        ]
 
   return (
     <article className="py-8 lg:py-10">
@@ -49,7 +60,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
         {p.imagem ? (
           <img src={p.imagem} alt={`Foto do projeto ${p.nome}`} className="aspect-[16/8] w-full object-cover" />
         ) : (
-          <Capa id={p.id} nome={p.nome} className="aspect-[16/7]" />
+          <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/8]" />
         )}
       </div>
 
@@ -58,7 +69,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
           <div key={k} className={`border-linha p-3 ${j % 2 === 0 ? 'border-r' : ''} ${j < 2 ? 'border-b sm:border-b-0' : ''} sm:border-r sm:last:border-r-0`}>
             <dt className="font-mono text-[10px] tracking-widest text-apagado uppercase">{k}</dt>
             <dd className="mt-1 flex items-center gap-1.5 text-sm">
-              {k === 'status' && p.fim === 'atual' && <span className="h-1.5 w-1.5 rounded-full bg-novo" />}
+              {k === 'última atividade' && <span className="h-1.5 w-1.5 rounded-full bg-novo" />}
               {v}
             </dd>
           </div>

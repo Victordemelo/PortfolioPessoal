@@ -49,23 +49,11 @@ export function BotaoTema() {
   )
 }
 
-function useHora() {
-  const [agora, setAgora] = useState(() => new Date())
-  useEffect(() => {
-    const t = setInterval(() => setAgora(new Date()), 15_000)
-    return () => clearInterval(t)
-  }, [])
-  const hora = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: perfil.fuso }).format(agora)
-  // Brasília é UTC−3 o ano todo; compara com o fuso de quem está vendo
-  const dif = (-180 + agora.getTimezoneOffset()) / 60
-  return { hora, relativo: dif === 0 ? 'mesmo fuso que você' : `${Math.abs(dif)}h ${dif > 0 ? 'à frente' : 'atrás'} de você` }
-}
-
 function Linha({ k, children }: { k: string; children: ReactNode }) {
   return (
-    <div className="grid grid-cols-[4.5rem_1fr] gap-3 border-b border-linha py-2 last:border-0">
+    <div className="grid grid-cols-[4.25rem_1fr] gap-3 border-b border-linha py-2 last:border-0">
       <dt className="font-mono text-[11px] tracking-wider text-apagado uppercase">{k}</dt>
-      <dd className="min-w-0 truncate text-sm">{children}</dd>
+      <dd className="min-w-0 text-sm [&>a]:break-all">{children}</dd>
     </div>
   )
 }
@@ -86,8 +74,6 @@ function Social({ href, rotulo, children }: { href: string; rotulo: string; chil
 }
 
 export function Lateral({ ativo }: { ativo: string | null }) {
-  const { hora, relativo } = useHora()
-
   return (
     <aside className="flex flex-col gap-7 pt-6 pb-4 lg:sticky lg:top-0 lg:h-svh lg:overflow-y-auto lg:py-10">
       <div className="flex items-center justify-between">
@@ -112,10 +98,11 @@ export function Lateral({ ativo }: { ativo: string | null }) {
             <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" /> disponível para projetos
           </span>
         </Linha>
-        <Linha k="local">{perfil.local}</Linha>
-        <Linha k="hora">
-          {hora} <span className="text-apagado">· {relativo}</span>
+        <Linha k="trabalho">
+          <span className="block truncate">{perfil.cargo}</span>
+          <span className="block truncate text-xs text-suave">{perfil.empresa}</span>
         </Linha>
+        <Linha k="local">{perfil.local}</Linha>
         <Linha k="formação">Eng. da Computação · Unisul</Linha>
         <Linha k="e-mail">
           <a href={`mailto:${perfil.contato.email}`} className="hover:text-destaque">

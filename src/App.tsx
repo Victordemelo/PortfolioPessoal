@@ -88,9 +88,9 @@ export default function App() {
         </header>
       )}
 
-      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:grid lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14 lg:px-10">
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:grid lg:grid-cols-[340px_minmax(0,1fr)] lg:gap-12 lg:px-10">
         <Lateral ativo={projeto ? 'projetos' : ativa} />
-        <div className="min-w-0 border-t border-linha lg:border-t-0 lg:border-l lg:pl-14">
+        <div className="min-w-0 border-t border-linha lg:border-t-0 lg:border-l lg:pl-12">
           <main>{projeto ? <PaginaProjeto p={projeto} /> : <Inicio />}</main>
           <Rodape />
         </div>

@@ -2,10 +2,11 @@ import { useState, type ReactNode } from 'react'
 import { ArrowRight, ArrowUpRight, Check, Copy } from 'lucide-react'
 import { linkWhatsapp, perfil } from '../data/perfil'
 import { grupos, projetos, projetosDoGrupo, type Projeto } from '../data/projetos'
-import { trajetoria } from '../data/trajetoria'
+import { anteriores, certificados, idiomas, trajetoria } from '../data/trajetoria'
 import { useAtividade } from '../lib/atividade'
-import { periodo } from '../lib/datas'
-import { Capa } from './Capa'
+import { dataCurta, periodo } from '../lib/datas'
+import { ultimaAtividade, useUltimosPushes } from '../lib/repos'
+import { CapaProjeto } from './Capas'
 import { Contribuicoes } from './Contribuicoes'
 import { GithubIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { SECOES } from './Lateral'
@@ -16,8 +17,8 @@ import { Pinagem } from './Pinagem'
 export function Secao({ id, titulo, children, extra }: { id: string; titulo: string; children: ReactNode; extra?: ReactNode }) {
   const n = SECOES.findIndex((s) => s.id === id) + 1
   return (
-    <section id={id} className="scroll-mt-6 py-12 first:pt-8 lg:py-16 lg:first:pt-10">
-      <header className="mb-8 flex items-center gap-4 border-b border-linha pb-3">
+    <section id={id} className="scroll-mt-6 py-7 first:pt-8 lg:py-8 lg:first:pt-10">
+      <header className="mb-6 flex items-center gap-4 border-b border-linha pb-3">
         <span className="font-mono text-sm text-destaque">{String(n).padStart(2, '0')}</span>
         <h2 className="text-2xl font-semibold tracking-tight">{titulo}</h2>
         <Onda canal={n - 1} className="ml-auto hidden md:flex" />
@@ -63,7 +64,7 @@ function Sobre() {
           <p key={p.slice(0, 20)}>{p}</p>
         ))}
       </div>
-      <dl className="mt-10 grid grid-cols-2 overflow-hidden rounded-lg border border-linha sm:grid-cols-4">
+      <dl className="mt-8 grid grid-cols-2 overflow-hidden rounded-lg border border-linha sm:grid-cols-4">
         {numeros.map((n, i) => (
           <div
             key={n.r}
@@ -98,15 +99,29 @@ function Atividade() {
 
 // ─── 03 Projetos ───────────────────────────────────────────
 
-function LinhaProjeto({ p }: { p: Projeto }) {
+/** "última atividade em 22/09/2026" para projeto em andamento; período para os demais */
+export function QuandoProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string> }) {
+  const ultima = ultimaAtividade(p, pushes)
+  if (p.fim === 'atual' && ultima) {
+    return (
+      <span className="flex items-center gap-2" title={`em andamento, ${periodo(p)}`}>
+        <span className="h-1.5 w-1.5 rounded-full bg-novo" />
+        última atividade em {dataCurta(ultima)}
+      </span>
+    )
+  }
+  return <span>{periodo(p)}</span>
+}
+
+function LinhaProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string> }) {
   return (
     <li>
-      <a href={`#/projetos/${p.id}`} className="group grid gap-4 border-b border-linha py-5 sm:grid-cols-[168px_1fr] sm:gap-6">
-        <div className="overflow-hidden rounded-md border border-linha">
+      <a href={`#/projetos/${p.id}`} className="group grid gap-4 border-b border-linha py-5 sm:grid-cols-[184px_1fr] sm:gap-6">
+        <div className="self-start overflow-hidden rounded-md border border-linha transition group-hover:border-destaque/60">
           {p.imagem ? (
             <img src={p.imagem} alt="" loading="lazy" className="foto-pb aspect-[16/10] w-full object-cover" />
           ) : (
-            <Capa id={p.id} nome={p.nome} className="aspect-[16/10]" />
+            <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/10]" />
           )}
         </div>
         <div className="min-w-0">
@@ -115,9 +130,8 @@ function LinhaProjeto({ p }: { p: Projeto }) {
               {p.nome}
               <ArrowRight size={16} className="-translate-x-1 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100" />
             </h4>
-            <span className="flex items-center gap-2 font-mono text-xs text-apagado">
-              {p.fim === 'atual' && <span className="h-1.5 w-1.5 rounded-full bg-novo" title="em andamento" />}
-              {periodo(p)}
+            <span className="font-mono text-xs text-apagado">
+              <QuandoProjeto p={p} pushes={pushes} />
             </span>
           </div>
           {p.contexto && <p className="text-sm text-apagado">{p.contexto}</p>}
@@ -136,9 +150,10 @@ function LinhaProjeto({ p }: { p: Projeto }) {
 }
 
 function Projetos() {
+  const pushes = useUltimosPushes()
   return (
     <Secao id="projetos" titulo="Projetos" extra={<span className="font-mono text-xs text-apagado">{projetos.length} no total · mais recentes primeiro</span>}>
-      <div className="space-y-12">
+      <div className="space-y-9">
         {grupos.map((g) => {
           const lista = projetosDoGrupo(g.id)
           return (
@@ -151,7 +166,7 @@ function Projetos() {
               </div>
               <ul>
                 {lista.map((p) => (
-                  <LinhaProjeto key={p.id} p={p} />
+                  <LinhaProjeto key={p.id} p={p} pushes={pushes} />
                 ))}
               </ul>
             </div>
@@ -166,12 +181,17 @@ function Projetos() {
 
 function Trajetoria() {
   return (
-    <Secao id="trajetoria" titulo="Trajetória">
-      <ol className="relative space-y-8 border-l border-linha pl-6">
+    <Secao id="trajetoria" titulo="Trajetória" extra={<span className="font-mono text-xs text-apagado">experiência · formação · certificados</span>}>
+      <ol className="relative space-y-7 border-l border-linha pl-6">
         {trajetoria.map((e) => (
           <li key={e.titulo} className="relative">
-            <span className="absolute top-1.5 -left-[29px] h-2.5 w-2.5 rounded-full border-2 border-fundo bg-destaque" />
-            <p className="font-mono text-xs text-apagado">{e.periodo || (e.tipo === 'trabalho' ? 'atual' : 'em andamento')}</p>
+            <span
+              className={`absolute top-1.5 -left-[29px] h-2.5 w-2.5 rounded-full border-2 border-fundo ${e.tipo === 'formacao' ? 'bg-novo' : 'bg-destaque'}`}
+            />
+            <p className="flex flex-wrap gap-x-2 font-mono text-xs text-apagado">
+              <span className="text-suave">{e.periodo}</span>
+              {e.detalhe && <span>· {e.detalhe}</span>}
+            </p>
             <h3 className="mt-1 text-lg font-medium">{e.titulo}</h3>
             <p className="text-sm text-suave">{e.lugar}</p>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-suave">{e.descricao}</p>
@@ -187,6 +207,51 @@ function Trajetoria() {
           </li>
         ))}
       </ol>
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+        <div>
+          <h3 className="mb-3 border-b border-linha pb-2 font-mono text-xs tracking-widest text-texto uppercase">
+            Certificados <span className="text-apagado">· {certificados.length}</span>
+          </h3>
+          <ul className="grid gap-x-6 sm:grid-cols-2">
+            {certificados.map((c) => (
+              <li key={c.nome} className="border-b border-linha/70 py-2.5">
+                <p className="text-sm">{c.nome}</p>
+                <p className="font-mono text-[11px] text-apagado">
+                  {c.emissor}
+                  {c.data && ` · ${c.data}`}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-8">
+          <div>
+            <h3 className="mb-3 border-b border-linha pb-2 font-mono text-xs tracking-widest text-texto uppercase">Antes da tecnologia</h3>
+            <ul>
+              {anteriores.map((a) => (
+                <li key={a.titulo} className="border-b border-linha/70 py-2.5">
+                  <p className="text-sm">{a.titulo}</p>
+                  <p className="font-mono text-[11px] text-apagado">
+                    {a.lugar}
+                    {a.periodo && ` · ${a.periodo}`}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-3 border-b border-linha pb-2 font-mono text-xs tracking-widest text-texto uppercase">Idiomas</h3>
+            <ul className="flex gap-6">
+              {idiomas.map((i) => (
+                <li key={i.nome} className="text-sm">
+                  {i.nome} <span className="font-mono text-[11px] text-apagado">· {i.nivel}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </Secao>
   )
 }
