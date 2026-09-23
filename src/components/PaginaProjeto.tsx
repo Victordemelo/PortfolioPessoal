@@ -58,7 +58,15 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
 
       <div className="mt-8 overflow-hidden rounded-lg border border-linha">
         {p.imagem ? (
-          <img src={p.imagem} alt={`Foto do projeto ${p.nome}`} className="aspect-[16/8] w-full object-cover" />
+          <img
+            src={p.imagem}
+            srcSet={p.imagemPequena ? `${p.imagemPequena} 480w, ${p.imagem} 1200w` : undefined}
+            sizes="(min-width: 1024px) 700px, 100vw"
+            width={1200}
+            height={600}
+            alt={`Foto do projeto ${p.nome}`}
+            className="aspect-[16/8] w-full object-cover"
+          />
         ) : (
           <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/8]" interativo />
         )}

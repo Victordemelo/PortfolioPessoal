@@ -22,6 +22,8 @@ export type Projeto = {
   /** Link extra (simulação, demo, vídeo) */
   extra?: { rotulo: string; url: string }
   imagem?: string
+  /** Versão menor da imagem, para a miniatura da lista */
+  imagemPequena?: string
   /** Contexto curto: empresa, disciplina, equipe */
   contexto?: string
   /** Aparece com selo de hardware */
@@ -138,8 +140,8 @@ export const projetos: Projeto[] = [
       rotulo: 'Simulação no Tinkercad',
       url: 'https://www.tinkercad.com/things/69O015dd28H-surprising-amberis-blorr?sharecode=FMlOkKQXUy5yqs9k447a0y-v5OLxYr4jNJa3ugkWFQk',
     },
-    imagem:
-      'https://raw.githubusercontent.com/Victordemelo/Estacionamento_Inteligente_Arduino/main/scr/main/arduino/fotos/Apresentacao_Unisul/foto_gp.jpeg',
+    imagem: '/img/estacionamento-1200.webp',
+    imagemPequena: '/img/estacionamento-480.webp',
     resumo:
       'Maquete de estacionamento automatizado com dois Arduino UNO: sensores detectam os carros, LEDs mostram as vagas livres e servomotores abrem a cancela.',
     destaques: [

@@ -167,7 +167,7 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
       </div>
 
       <div className="flex items-center gap-4">
-        <img src={perfil.avatar} alt={perfil.nome} width={72} height={72} className="h-14 w-14 shrink-0 rounded-lg border border-linha object-cover min-[360px]:h-18 min-[360px]:w-18" />
+        <img src={perfil.avatar} srcSet={`${perfil.avatar} 1x, ${perfil.avatarGrande} 2x`} alt={perfil.nome} width={72} height={72} className="h-14 w-14 shrink-0 rounded-lg border border-linha object-cover min-[360px]:h-18 min-[360px]:w-18" />
         <div className="min-w-0">
           <p className="text-xl leading-tight font-semibold tracking-tight">{perfil.nome}</p>
           <p className="mt-1 text-sm text-suave">{perfil.titulo}</p>

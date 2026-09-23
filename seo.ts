@@ -25,13 +25,20 @@ const pessoa = {
   '@id': `${SITE}/#pessoa`,
   name: perfil.nome,
   url: SITE,
-  image: perfil.avatar,
+  image: `${SITE}${perfil.avatarGrande}`,
   email: `mailto:${perfil.contato.email}`,
   jobTitle: perfil.cargo,
   worksFor: { '@type': 'Organization', name: perfil.empresa },
   alumniOf: { '@type': 'CollegeOrUniversity', name: 'Unisul · Universidade do Sul de Santa Catarina' },
   address: { '@type': 'PostalAddress', addressLocality: 'São José', addressRegion: 'SC', addressCountry: 'BR' },
   knowsAbout: ['Desenvolvimento de software', 'Sistemas web', 'Automações', 'Integrações e APIs', 'PHP', 'Laravel', 'React', 'TypeScript', 'C#', 'Python', 'Docker', 'ESP32', 'Arduino', 'IoT'],
+  knowsLanguage: perfil.idiomas,
+  // o que ele faz, com a região atendida: é o que assistentes de IA usam para recomendar
+  makesOffer: perfil.servicos.map((s) => ({
+    '@type': 'Offer',
+    itemOffered: { '@type': 'Service', name: s.nome, description: s.descricao },
+    areaServed: perfil.areaAtendida.map((a) => ({ '@type': 'Place', name: a })),
+  })),
   sameAs: [perfil.contato.github, perfil.contato.linkedin, perfil.contato.instagram, `https://wa.me/${perfil.contato.whatsapp}`],
 }
 
@@ -80,6 +87,9 @@ function paginaInicial(): Pagina {
     <h1>${esc(perfil.nome)}</h1>
     <p>${esc(DESCRICAO)}</p>
     ${perfil.sobre.map((s) => `<p>${esc(s)}</p>`).join('')}
+    <h2>O que eu faço</h2>
+    <ul>${perfil.servicos.map((s) => `<li><strong>${esc(s.nome)}</strong>: ${esc(s.descricao)}</li>`).join('')}</ul>
+    <p>Atendo ${esc(perfil.areaAtendida.join(', '))}.</p>
     <h2>Projetos</h2>
     ${grupos
       .map(
@@ -140,7 +150,7 @@ function paginaProjeto(p: Projeto): Pagina {
       inLanguage: 'pt-BR',
       author: pessoa,
       ...(p.repo ? { codeRepository: p.repo, programmingLanguage: p.stack } : { keywords: p.stack.join(', ') }),
-      ...(p.imagem ? { image: p.imagem } : {}),
+      ...(p.imagem ? { image: `${SITE}${p.imagem}` } : {}),
     },
   }
 }
@@ -165,7 +175,48 @@ function sitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  ${urls.join('\n  ')}\n</urlset>\n`
 }
 
-const ROBOTS = `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`
+// Buscadores e assistentes de IA liberados de forma explícita: o site é público e
+// a ideia é justamente ser encontrado e citado
+const ROBOS_IA = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'Bingbot', 'Googlebot', 'DuckAssistBot', 'meta-externalagent', 'CCBot']
+const ROBOTS = `User-agent: *\nAllow: /\n\n${ROBOS_IA.map((r) => `User-agent: ${r}\nAllow: /`).join('\n\n')}\n\nSitemap: ${SITE}/sitemap.xml\n`
+
+// llms.txt (llmstxt.org): um resumo em Markdown para modelos de linguagem lerem sem JS
+function llms() {
+  const linha = (p: Projeto) => `- [${p.nome}](${SITE}/projetos/${p.id}): ${p.resumo}${p.repo ? ` Código: ${p.repo}` : ''}`
+  return `# ${perfil.nome}
+
+> ${DESCRICAO}
+
+${perfil.sobre.join('\n\n')}
+
+## O que eu faço
+
+${perfil.servicos.map((s) => `- **${s.nome}**: ${s.descricao}`).join('\n')}
+
+Atendo ${perfil.areaAtendida.join(', ')}. Idiomas: ${perfil.idiomas.join(', ')}.
+
+## Projetos
+
+${grupos.map((g) => `### ${g.titulo}\n\n${projetosOrdenados.filter((p) => p.categoria === g.id).map(linha).join('\n')}`).join('\n\n')}
+
+## Trajetória
+
+${trajetoria.map((e) => `- **${e.titulo}**, ${e.lugar} (${e.periodo}). ${e.descricao}`).join('\n')}
+
+## Certificados
+
+${certificados.map((c) => `- ${c.nome}, ${c.emissor}`).join('\n')}
+
+## Contato
+
+- Site: ${SITE}
+- WhatsApp: https://wa.me/${perfil.contato.whatsapp}
+- E-mail: ${perfil.contato.email}
+- LinkedIn: ${perfil.contato.linkedin}
+- GitHub: ${perfil.contato.github}
+- Instagram: ${perfil.contato.instagram}
+`
+}
 
 export function seo(): Plugin {
   let saida = 'dist'
@@ -188,6 +239,7 @@ export function seo(): Plugin {
       }
       writeFileSync(join(saida, 'sitemap.xml'), sitemap())
       writeFileSync(join(saida, 'robots.txt'), ROBOTS)
+      writeFileSync(join(saida, 'llms.txt'), llms())
     },
   }
 }

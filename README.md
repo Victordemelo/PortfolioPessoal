@@ -65,6 +65,8 @@ A decisão de arquitetura está em [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md).
 
 ## SEO
 
-O build gera, a partir de `src/data`: título, descrição, link canônico, Open Graph e JSON-LD de cada página, uma página pronta para cada projeto em `/projetos/<id>`, `robots.txt` e `sitemap.xml` (ver `seo.ts`). O domínio fica em `perfil.site`.
+O build gera, a partir de `src/data`: título, descrição, link canônico, Open Graph e JSON-LD de cada página, uma página pronta para cada projeto em `/projetos/<id>`, `robots.txt` (com os robôs de busca e de IA liberados de forma explícita), `sitemap.xml` e `llms.txt`, um resumo em Markdown para assistentes de IA (ver `seo.ts`). Os serviços e a região atendida (`perfil.servicos` e `perfil.areaAtendida`) aparecem na seção Contato e no JSON-LD. O domínio fica em `perfil.site`.
 
-Depois de publicar: cadastre o site no [Google Search Console](https://search.google.com/search-console), envie `https://victordemelo.com.br/sitemap.xml` e coloque o link do site no LinkedIn, GitHub e Instagram.
+Imagens em WebP e fontes (IBM Plex, via `@fontsource`) servidas pelo próprio site, sem Google Fonts. A cada deploy, o workflow avisa Bing/Yandex pelo IndexNow (chave em `public/<chave>.txt`).
+
+Depois de publicar: cadastre o site no [Google Search Console](https://search.google.com/search-console) e no [Bing Webmaster Tools](https://www.bing.com/webmasters) (é o índice que o ChatGPT e o Copilot consultam), envie `https://victordemelo.com.br/sitemap.xml` e coloque o link do site no LinkedIn, GitHub e Instagram. Na Cloudflare, confira que **Security → Bots → Block AI bots** está desligado e que o **robots.txt gerenciado** não está ativo, senão os assistentes de IA ficam de fora.

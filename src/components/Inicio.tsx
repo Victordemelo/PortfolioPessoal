@@ -119,7 +119,7 @@ function LinhaProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string
       <a href={`/projetos/${p.id}`} className="group grid items-start gap-4 border-b border-linha py-5 sm:grid-cols-[184px_1fr] sm:gap-6">
         <div className="h-fit self-start overflow-hidden rounded-md border border-linha transition group-hover:border-destaque/60">
           {p.imagem ? (
-            <img src={p.imagem} alt="" loading="lazy" className="foto-pb aspect-[16/10] w-full object-cover" />
+            <img src={p.imagemPequena ?? p.imagem} alt="" loading="lazy" decoding="async" width={480} height={300} className="foto-pb aspect-[16/10] w-full object-cover" />
           ) : (
             <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/10]" />
           )}
@@ -273,6 +273,17 @@ function Contato() {
     <Secao id="contato" titulo="Contato">
       <p className="max-w-xl text-2xl leading-snug font-light tracking-tight sm:text-3xl">
         Tem um sistema pra tirar do papel, uma integração ou uma automação? <span className="text-suave">Me chama no WhatsApp.</span>
+      </p>
+      <ul className="mt-8 grid gap-px overflow-hidden rounded-md border border-linha bg-linha sm:grid-cols-2">
+        {perfil.servicos.map((s) => (
+          <li key={s.nome} className="bg-fundo p-4">
+            <p className="text-sm font-medium">{s.nome}</p>
+            <p className="mt-1 text-sm leading-relaxed text-suave">{s.descricao}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 font-mono text-xs text-apagado">
+        {perfil.areaAtendida.slice(0, -1).join(' · ')} · e remoto para todo o Brasil
       </p>
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <a

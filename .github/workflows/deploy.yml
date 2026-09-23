@@ -81,6 +81,21 @@ jobs:
           echo "::error::https://victordemelo.com.br não respondeu 200 depois do deploy"
           exit 1
 
+      # IndexNow: avisa Bing (e quem usa o índice dele, como o ChatGPT e o Copilot),
+      # Yandex e outros que as páginas mudaram. A chave é pública por definição: o
+      # arquivo public/<chave>.txt prova que o site é meu. Falhar aqui não derruba o deploy.
+      - name: Avisa os buscadores (IndexNow)
+        if: steps.secrets.outputs.ok == 'true'
+        continue-on-error: true
+        env:
+          chave: 06223d67238cf0b4a04c0ec7997d9f98 # = nome do arquivo em public/
+        run: |
+          urls=$(curl -s https://victordemelo.com.br/sitemap.xml | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g' | jq -R . | jq -sc .)
+          echo "chave $chave · $(echo "$urls" | jq length) URLs"
+          curl -s -o /dev/null -w 'IndexNow: HTTP %{http_code}\n' -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "{\"host\":\"victordemelo.com.br\",\"key\":\"$chave\",\"keyLocation\":\"https://victordemelo.com.br/$chave.txt\",\"urlList\":$urls}"
+
       - name: Apaga a chave
         if: always()
         run: rm -f ~/.ssh/deploy

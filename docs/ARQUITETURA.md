@@ -8,7 +8,7 @@
 - Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
 - Links diretos para seções (`/#stack`) e botão voltar funcionando.
-- SEO: cada página com título, descrição, canônico, Open Graph e JSON-LD próprios; conteúdo em HTML puro antes do JS; `robots.txt` e `sitemap.xml`.
+- SEO: cada página com título, descrição, canônico, Open Graph e JSON-LD próprios; conteúdo em HTML puro antes do JS; `robots.txt`, `sitemap.xml` e `llms.txt`; IndexNow a cada deploy.
 - Tema claro e escuro; funciona no celular.
 
 **Não funcionais**
@@ -64,7 +64,7 @@ Regras do container para conviver com o servidor:
 | Página inicial | `components/Inicio.tsx` | As seis seções numeradas, na ordem. |
 | Página de projeto | `components/PaginaProjeto.tsx` | Foto ou capa gerada, metadados, destaques, stack, links e navegação anterior/próximo. |
 | Rotas | `lib/rota.ts` | Caminhos de verdade (`/projetos/<id>`) para cada projeto ser indexável; seções por âncora (`/#projetos`). Cliques em links internos são interceptados (sem recarregar); links antigos com `#/` são convertidos. |
-| SEO | `seo.ts` (plugin do Vite) | No build, a partir de `src/data`: `<head>` de cada página (título, descrição, canônico, Open Graph, Twitter, JSON-LD `Person`/`ProfilePage`/`SoftwareSourceCode` com `sameAs` para GitHub, LinkedIn, Instagram e WhatsApp), conteúdo em HTML puro dentro do `#root`, `projetos/<id>/index.html` pré-gerado, `robots.txt` e `sitemap.xml`. O domínio vem de `perfil.site`. |
+| SEO | `seo.ts` (plugin do Vite) | No build, a partir de `src/data`: `<head>` de cada página (título, descrição, canônico, Open Graph, Twitter, JSON-LD `Person`/`ProfilePage`/`SoftwareSourceCode` com `sameAs` para GitHub, LinkedIn, Instagram e WhatsApp), conteúdo em HTML puro dentro do `#root`, `projetos/<id>/index.html` pré-gerado, `robots.txt` (robôs de IA liberados explicitamente), `sitemap.xml` e `llms.txt`. O JSON-LD da pessoa inclui `makesOffer` (serviços de `perfil.servicos`, com `areaServed`) e `knowsLanguage`. O domínio vem de `perfil.site`. |
 | Imagens de compartilhamento | `public/og.png`, ícones | Prévia 1200×630 e ícones (192, 512, Apple) renderizados a partir de HTML; `site.webmanifest` para instalar no celular. |
 | Capas dos projetos | `components/Capas.tsx`, `components/marcas.ts` | Uma ilustração SVG animada por projeto, a partir do que o repositório faz: Remote Wake (simulador: LIGAR manda o magic packet e o PC dá boot no Linux e fica ligado; DESLIGAR faz o agente digitar `sudo shutdown -h now` e o PC desliga; clicável na página do projeto, demonstração automática na miniatura), StabilMoney (ícone do app vetorizado do repositório + reservado e disponível variando), Fluxo de Agentes (etapas acendendo uma a uma), BigData (barras, rosca e linha em movimento), Empréstimos (seleção percorrendo a tabela). Animações em CSS, estado final estático com `prefers-reduced-motion`. |
 | Capa genérica | `components/Capa.tsx` | Trecho de placa gerado do id, para projeto novo que ainda não tem capa própria. |
