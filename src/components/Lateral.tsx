@@ -13,19 +13,40 @@ export const SECOES = [
   { id: 'contato', rotulo: 'Contato' },
 ]
 
+// Há mais de um botão de tema na página; todos observam a classe do <html>
 function useTema() {
-  const [claro, setClaro] = useState(() => document.documentElement.classList.contains('claro'))
+  const raiz = document.documentElement
+  const [claro, setClaro] = useState(() => raiz.classList.contains('claro'))
+  useEffect(() => {
+    const obs = new MutationObserver(() => setClaro(raiz.classList.contains('claro')))
+    obs.observe(raiz, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [raiz])
   const alternar = () => {
-    const novo = !claro
-    document.documentElement.classList.toggle('claro', novo)
+    const novo = !raiz.classList.contains('claro')
+    raiz.classList.toggle('claro', novo)
     try {
       localStorage.setItem('tema', novo ? 'claro' : 'escuro')
     } catch {
       // modo privado: só não lembra a escolha
     }
-    setClaro(novo)
   }
   return [claro, alternar] as const
+}
+
+export function BotaoTema() {
+  const [claro, alternar] = useTema()
+  return (
+    <button
+      onClick={alternar}
+      aria-label={claro ? 'Usar tema escuro' : 'Usar tema claro'}
+      title={claro ? 'Tema escuro' : 'Tema claro'}
+      className="flex h-8 items-center gap-1.5 rounded-md border border-linha px-2.5 font-mono text-[11px] text-suave transition hover:border-destaque hover:text-destaque"
+    >
+      {claro ? <Moon size={14} /> : <Sun size={14} />}
+      {claro ? 'escuro' : 'claro'}
+    </button>
+  )
 }
 
 function useHora() {
@@ -65,7 +86,6 @@ function Social({ href, rotulo, children }: { href: string; rotulo: string; chil
 }
 
 export function Lateral({ ativo }: { ativo: string | null }) {
-  const [claro, alternarTema] = useTema()
   const { hora, relativo } = useHora()
 
   return (
@@ -74,21 +94,13 @@ export function Lateral({ ativo }: { ativo: string | null }) {
         <a href="#/" aria-label="Início" onClick={() => window.scrollTo({ top: 0 })} className="text-texto transition hover:text-destaque">
           <Logo className="h-5" />
         </a>
-        <button
-          onClick={alternarTema}
-          aria-label={claro ? 'Usar tema escuro' : 'Usar tema claro'}
-          title={claro ? 'Tema escuro' : 'Tema claro'}
-          className="flex h-8 items-center gap-1.5 rounded-md border border-linha px-2.5 font-mono text-[11px] text-suave transition hover:border-destaque hover:text-destaque"
-        >
-          {claro ? <Moon size={14} /> : <Sun size={14} />}
-          {claro ? 'escuro' : 'claro'}
-        </button>
+        <BotaoTema />
       </div>
 
       <div className="flex items-center gap-4">
         <img src={perfil.avatar} alt={perfil.nome} width={72} height={72} className="h-18 w-18 shrink-0 rounded-lg border border-linha object-cover" />
         <div className="min-w-0">
-          <h1 className="text-xl leading-tight font-semibold tracking-tight">{perfil.nome}</h1>
+          <p className="text-xl leading-tight font-semibold tracking-tight">{perfil.nome}</p>
           <p className="mt-1 text-sm text-suave">{perfil.titulo}</p>
         </div>
       </div>

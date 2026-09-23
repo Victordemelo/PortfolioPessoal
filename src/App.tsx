@@ -3,8 +3,10 @@ import { ArrowUp } from 'lucide-react'
 import { perfil } from './data/perfil'
 import { projetos } from './data/projetos'
 import { useRota } from './lib/rota'
+import { Bancada } from './components/bancada/Bancada'
 import { Inicio } from './components/Inicio'
-import { Lateral, SECOES } from './components/Lateral'
+import { BotaoTema, Lateral, SECOES } from './components/Lateral'
+import { Logo } from './components/Logo'
 import { PaginaProjeto } from './components/PaginaProjeto'
 import { Rodape } from './components/Rodape'
 
@@ -57,6 +59,28 @@ export default function App() {
 
   return (
     <>
+      {!projeto && (
+        <header className="tapete border-b border-linha">
+          <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:px-10">
+            <nav className="flex h-14 items-center justify-between border-b border-linha/70">
+              <a href="#/" aria-label="Início" className="text-texto transition hover:text-destaque">
+                <Logo className="h-5" />
+              </a>
+              <div className="flex items-center gap-1 text-sm">
+                {SECOES.filter((s) => s.id !== 'sobre').map((s) => (
+                  <a key={s.id} href={`#/${s.id}`} className="hidden rounded-md px-2.5 py-1 text-suave transition hover:text-destaque md:block">
+                    {s.rotulo}
+                  </a>
+                ))}
+                <span className="mx-2 hidden h-4 w-px bg-linha md:block" />
+                <BotaoTema />
+              </div>
+            </nav>
+            <Bancada />
+          </div>
+        </header>
+      )}
+
       <div className="mx-auto max-w-[1200px] px-5 sm:px-8 lg:grid lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14 lg:px-10">
         <Lateral ativo={projeto ? 'projetos' : ativa} />
         <div className="min-w-0 border-t border-linha lg:border-t-0 lg:border-l lg:pl-14">

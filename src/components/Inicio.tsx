@@ -9,6 +9,7 @@ import { Capa } from './Capa'
 import { Contribuicoes } from './Contribuicoes'
 import { GithubIcon, LinkedinIcon } from './Icones'
 import { SECOES } from './Lateral'
+import { Onda } from './Onda'
 import { Pinagem } from './Pinagem'
 
 /** Cabeçalho de seção numerado, como os capítulos de um datasheet */
@@ -16,10 +17,11 @@ export function Secao({ id, titulo, children, extra }: { id: string; titulo: str
   const n = SECOES.findIndex((s) => s.id === id) + 1
   return (
     <section id={id} className="scroll-mt-6 py-12 first:pt-8 lg:py-16 lg:first:pt-10">
-      <header className="mb-8 flex items-baseline gap-4 border-b border-linha pb-3">
+      <header className="mb-8 flex items-center gap-4 border-b border-linha pb-3">
         <span className="font-mono text-sm text-destaque">{String(n).padStart(2, '0')}</span>
         <h2 className="text-2xl font-semibold tracking-tight">{titulo}</h2>
-        {extra && <div className="ml-auto">{extra}</div>}
+        <Onda canal={n - 1} className="ml-auto hidden md:flex" />
+        {extra && <div className="hidden sm:block">{extra}</div>}
       </header>
       {children}
     </section>

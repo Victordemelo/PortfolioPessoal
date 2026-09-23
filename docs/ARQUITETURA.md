@@ -3,7 +3,8 @@
 ## Requisitos
 
 **Funcionais**
-- Página no formato de ficha técnica (datasheet) de componente: no desktop, barra lateral fixa com perfil, "características" e índice numerado que acompanha a rolagem; à direita, as seções 01 Sobre, 02 Atividade (Figura 1, ao vivo), 03 Projetos, 04 Pinagem (Figura 2: a stack como um CI DIP-18), 05 Trajetória e 06 Contato. No celular, tudo vira uma coluna e a pinagem vira tabela de pinos.
+- Abertura com uma bancada eletrônica interativa: ESP32 numa protoboard com HC-SR04, display OLED, LED e servo (cancela), o firmware sendo digitado num editor e um monitor serial ao vivo. O sensor mede a distância até o cursor; abaixo de 30 cm a vaga fica ocupada, o LED acende e a cancela abre. O botão EN reinicia a placa.
+- Depois da abertura, página no formato de ficha técnica (datasheet) de componente: no desktop, barra lateral fixa com perfil, "características" e índice numerado que acompanha a rolagem; à direita, as seções 01 Sobre, 02 Atividade (Figura 1, ao vivo), 03 Projetos, 04 Pinagem (Figura 2: a stack como um CI DIP-18), 05 Trajetória e 06 Contato. No celular, tudo vira uma coluna e a pinagem vira tabela de pinos.
 - Projetos agrupados por categoria, com data de execução, do mais recente ao mais antigo; cada um com página própria (`#/projetos/<id>`), com anterior/próximo.
 - Atividade do GitHub ao vivo, para mostrar que o trabalho continua.
 - Links diretos para seções (`#/stack`) e botão voltar funcionando.
@@ -41,6 +42,11 @@ O Dockerfile é multi-stage: o estágio `node` gera o `dist/` e o estágio final
 
 | Peça | Arquivo | Papel |
 |---|---|---|
+| Bancada | `components/bancada/Bancada.tsx` | Estado da "placa": boot com atrasos reais (espera a resposta do GitHub até 5 s), depois um ponteiro de execução anda pelas linhas do `loop()` a cada 110 ms e cada linha tem efeito (`sonar.read` mede, `digitalWrite` acende o LED, `cancela.write` move o servo, `Serial.printf` escreve no monitor). Sem mouse (toque), a distância vem de um objeto simulado. |
+| Desenho da placa | `components/bancada/Placa.tsx` | SVG com as peças em cores reais; ondas do sonar e pulsos nos fios de dados em CSS, desligados com `prefers-reduced-motion`. |
+| Editor | `components/bancada/Editor.tsx`, `codigo.ts` | Digita o firmware e depois destaca a linha em execução; abas com TypeScript e PHP. Realce de sintaxe com um tokenizador de uma regex, sem biblioteca. |
+| Monitor serial | `components/bancada/Serial.tsx` | Log com etiquetas coloridas; só rola sozinho se a pessoa não subiu para ler. |
+| Traço lógico | `components/Onda.tsx` | Sinal digital rolando ao lado do título de cada seção. |
 | Barra lateral | `components/Lateral.tsx` | Perfil, tabela "Características" (status, local, hora com fuso relativo ao visitante, formação, e-mail), índice numerado e redes. Fixa (`sticky`) no desktop; no celular vira o topo da página. |
 | Índice ativo | `useSecaoAtiva` em `App.tsx` | `IntersectionObserver` nas seções para acender o item do índice que está na tela. |
 | Pinagem | `components/Pinagem.tsx` | A stack como um CI DIP-18 em SVG: pinos 1–9 descem à esquerda, 10–18 sobem à direita, 9 = GND e 18 = VCC. Hover ou foco no pino mostra a função e em quantos projetos a tecnologia aparece. No celular, tabela de pinos. |

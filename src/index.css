@@ -119,3 +119,88 @@ button:not(:disabled),
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Bancada ─────────────────────────────────────────────── */
+/* Fundo de tapete de corte: grade fina com marcação a cada 5 linhas */
+.tapete {
+  background-color: var(--fundo);
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--linha) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--linha) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to right, color-mix(in oklab, var(--linha) 25%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--linha) 25%, transparent) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+
+/* Pulsos correndo pelos fios de dados */
+.fio-dados {
+  stroke-dasharray: 2 16;
+  animation: fluir 0.8s linear infinite;
+  opacity: 0.85;
+}
+@keyframes fluir {
+  to { stroke-dashoffset: -18; }
+}
+
+/* Ondas do sonar */
+.onda-sonar {
+  transform-box: view-box;
+  transform-origin: 528px 44px;
+  animation: sonar var(--dur, 1.8s) ease-out infinite;
+  opacity: 0;
+}
+@keyframes sonar {
+  0% { transform: scale(0.35); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* Cursor do editor */
+@keyframes cursor-pisca {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.cursor-editor {
+  animation: cursor-pisca 1s steps(1) infinite;
+}
+
+/* Realce de sintaxe */
+:root {
+  --sx-kw: #f5b83d;
+  --sx-str: #a3d98a;
+  --sx-num: #f59e8b;
+  --sx-fn: #7fb8ff;
+  --sx-pre: #c7a6ff;
+  --sx-tipo: #67d4c8;
+  --sx-var: #f0a6d8;
+}
+:root.claro {
+  --sx-kw: #a3560a;
+  --sx-str: #3f7d23;
+  --sx-num: #b4452f;
+  --sx-fn: #1f5fbf;
+  --sx-pre: #7443c9;
+  --sx-tipo: #0f7b70;
+  --sx-var: #a8327d;
+}
+.sx-kw { color: var(--sx-kw); }
+.sx-str { color: var(--sx-str); }
+.sx-num { color: var(--sx-num); }
+.sx-fn { color: var(--sx-fn); }
+.sx-pre { color: var(--sx-pre); }
+.sx-tipo { color: var(--sx-tipo); }
+.sx-var { color: var(--sx-var); }
+.sx-com { color: var(--apagado); font-style: italic; }
+
+/* Traço de analisador lógico nos títulos de seção */
+@keyframes rolar-onda {
+  to { transform: translateX(-40px); }
+}
+.onda-logica {
+  animation: rolar-onda 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .so-com-movimento {
+    display: none;
+  }
+}
