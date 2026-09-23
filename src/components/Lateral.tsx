@@ -1,6 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Mail, Moon, Sun } from 'lucide-react'
+import { conquistas } from '../data/conquistas'
 import { linkWhatsapp, perfil } from '../data/perfil'
+import { projetosOrdenados, type Projeto } from '../data/projetos'
 import { GithubIcon, InstagramIcon, LinkedinIcon, WhatsappIcon } from './Icones'
 import { Logo } from './Logo'
 
@@ -73,7 +75,88 @@ function Social({ href, rotulo, children }: { href: string; rotulo: string; chil
   )
 }
 
-export function Lateral({ ativo }: { ativo: string | null }) {
+/** Seções da página de um projeto (os ids estão em PaginaProjeto.tsx) */
+export function secoesDoProjeto(p: Projeto) {
+  return [
+    { id: 'visao', rotulo: 'Visão geral' },
+    { id: 'destaques', rotulo: 'Destaques' },
+    { id: 'stack-projeto', rotulo: 'Stack' },
+    ...(p.repo || p.noAr || p.extra ? [{ id: 'links', rotulo: 'Links' }] : []),
+  ]
+}
+
+function Indice({ titulo, itens, ativo, prefixo }: { titulo: string; itens: { id: string; rotulo: string }[]; ativo: string | null; prefixo: string }) {
+  return (
+    <nav aria-label={titulo} className="hidden lg:block">
+      <p className="mb-2 truncate font-mono text-[10px] tracking-widest text-apagado uppercase">{titulo}</p>
+      <ol className="space-y-0.5">
+        {itens.map((s, i) => {
+          const on = ativo === s.id
+          return (
+            <li key={s.id}>
+              <a
+                href={`${prefixo}${s.id}`}
+                className={`group flex items-center gap-3 rounded-md py-1.5 text-sm transition ${on ? 'text-texto' : 'text-suave hover:text-texto'}`}
+              >
+                <span className={`font-mono text-[11px] ${on ? 'text-destaque' : 'text-apagado'}`}>{String(i + 1).padStart(2, '0')}</span>
+                <span className={`h-px transition-all ${on ? 'w-8 bg-destaque' : 'w-4 bg-linha group-hover:w-6 group-hover:bg-suave'}`} />
+                {s.rotulo}
+              </a>
+            </li>
+          )
+        })}
+      </ol>
+    </nav>
+  )
+}
+
+function OutrosProjetos({ atual }: { atual: Projeto }) {
+  return (
+    <nav aria-label="Outros projetos" className="hidden lg:block">
+      <p className="mb-2 font-mono text-[10px] tracking-widest text-apagado uppercase">Outros projetos</p>
+      <ul className="space-y-0.5">
+        {projetosOrdenados
+          .filter((p) => p.id !== atual.id)
+          .map((p) => (
+            <li key={p.id}>
+              <a href={`/projetos/${p.id}`} className="group flex items-center gap-2 py-1 text-sm text-suave transition hover:text-texto">
+                <span className="h-1 w-1 rounded-full bg-linha transition group-hover:bg-destaque" />
+                {p.nome}
+              </a>
+            </li>
+          ))}
+      </ul>
+      <a href="/#projetos" className="mt-3 inline-flex items-center gap-1.5 font-mono text-xs text-destaque hover:underline">
+        ← todos os projetos
+      </a>
+    </nav>
+  )
+}
+
+function Conquistas() {
+  return (
+    <section aria-label="Conquistas no GitHub" className="hidden lg:block">
+      <p className="mb-2 font-mono text-[10px] tracking-widest text-apagado uppercase">Conquistas no GitHub</p>
+      <ul className="flex gap-2">
+        {conquistas.map((c) => (
+          <li key={c.nome}>
+            <a
+              href={`${perfil.contato.github}?tab=achievements`}
+              target="_blank"
+              rel="noreferrer"
+              title={`${c.nome}: ${c.descricao}`}
+              className="group block rounded-lg border border-linha bg-superficie p-1.5 transition hover:-translate-y-0.5 hover:border-destaque"
+            >
+              <img src={c.imagem} alt={c.nome} width={48} height={48} loading="lazy" className="h-12 w-12 transition group-hover:scale-110" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Projeto }) {
   return (
     <aside className="flex flex-col gap-7 pt-6 pb-4 lg:sticky lg:top-0 lg:h-svh lg:overflow-y-auto lg:py-10">
       <div className="flex items-center justify-between">
@@ -111,26 +194,16 @@ export function Lateral({ ativo }: { ativo: string | null }) {
         </Linha>
       </dl>
 
-      <nav aria-label="Seções" className="hidden lg:block">
-        <p className="mb-2 font-mono text-[10px] tracking-widest text-apagado uppercase">Índice</p>
-        <ol className="space-y-0.5">
-          {SECOES.map((s, i) => {
-            const on = ativo === s.id
-            return (
-              <li key={s.id}>
-                <a
-                  href={`/#${s.id}`}
-                  className={`group flex items-center gap-3 rounded-md py-1.5 text-sm transition ${on ? 'text-texto' : 'text-suave hover:text-texto'}`}
-                >
-                  <span className={`font-mono text-[11px] ${on ? 'text-destaque' : 'text-apagado'}`}>{String(i + 1).padStart(2, '0')}</span>
-                  <span className={`h-px transition-all ${on ? 'w-8 bg-destaque' : 'w-4 bg-linha group-hover:w-6 group-hover:bg-suave'}`} />
-                  {s.rotulo}
-                </a>
-              </li>
-            )
-          })}
-        </ol>
-      </nav>
+      {projeto ? (
+        <>
+          <Indice titulo={`Neste projeto · ${projeto.nome}`} itens={secoesDoProjeto(projeto)} ativo={ativo} prefixo="#" />
+          <OutrosProjetos atual={projeto} />
+        </>
+      ) : (
+        <Indice titulo="Índice" itens={SECOES} ativo={ativo} prefixo="/#" />
+      )}
+
+      <Conquistas />
 
       <div className="flex gap-2 lg:mt-auto">
         <Social href={linkWhatsapp()} rotulo="WhatsApp">

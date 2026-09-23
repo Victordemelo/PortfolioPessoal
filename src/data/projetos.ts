@@ -84,7 +84,7 @@ export const projetos: Projeto[] = [
       'O revisor usa uma IA diferente da que escreveu o código',
       'Funciona no Windows e no macOS',
     ],
-    stack: ['Node.js', 'CLI', 'Claude', 'Codex', 'Automação'],
+    stack: ['Node.js', 'CLI', 'Codex', 'Automação', 'IA'],
   },
   {
     id: 'stabilmoney',

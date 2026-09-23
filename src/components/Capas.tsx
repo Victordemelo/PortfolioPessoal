@@ -1,12 +1,16 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { Capa } from './Capa'
+import { STABILMONEY_D } from './marcas'
 
-// Capas ilustradas de cada projeto, desenhadas a partir do que o repositório faz.
-// Todas em 400×250 (16:10); as cores seguem o tema, exceto as marcas dos projetos.
+// Capas ilustradas e animadas de cada projeto, desenhadas a partir do que o
+// repositório faz. Todas em 400×250 (16:10); as animações estão no index.css
+// (prefixos rw-, sm-, fx-, bd-) e param com prefers-reduced-motion.
 // Projeto sem capa aqui cai na capa gerada (trecho de placa com as iniciais).
 
 const W = 400
 const H = 250
+
+const atraso = (s: number): CSSProperties => ({ animationDelay: `${s}s` })
 
 function Moldura({ children, rotulo }: { children: ReactNode; rotulo: string }) {
   return (
@@ -23,64 +27,111 @@ function Moldura({ children, rotulo }: { children: ReactNode; rotulo: string }) 
   )
 }
 
-// ─── Remote Wake: celular manda o "magic packet" e o PC liga ─────────
-function RemoteWake() {
+function MarcaRemoteWake({ x, y, escala }: { x: number; y: number; escala: number }) {
   return (
-    <Moldura rotulo="Capa do Remote Wake: celular enviando sinal para ligar um computador">
-      {/* celular */}
-      <rect x="52" y="78" width="62" height="112" rx="10" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.5" />
-      <rect x="60" y="92" width="46" height="78" rx="3" fill="var(--superficie)" />
-      <circle cx="83" cy="131" r="15" fill="none" stroke="#42F5AD" strokeWidth="3" strokeDasharray="70 25" strokeLinecap="round" transform="rotate(-50 83 131)" />
-      <line x1="83" y1="118" x2="83" y2="131" stroke="#42F5AD" strokeWidth="3" strokeLinecap="round" />
-      <rect x="74" y="178" width="18" height="3" rx="1.5" fill="var(--apagado)" />
-      {/* pacote viajando */}
-      <g fill="none" stroke="#27C7F5" strokeWidth="2" strokeLinecap="round">
-        {[0, 1, 2].map((i) => (
-          <path key={i} d={`M${130 + i * 26} ${112 - i * 6} q 10 ${18 + i * 6} 0 ${36 + i * 12}`} opacity={1 - i * 0.25} />
+    <g transform={`translate(${x} ${y}) scale(${escala})`} fill="none" strokeLinecap="round">
+      <path d="M17.5 27.5a21 21 0 1 0 29 0" stroke="#42F5AD" strokeWidth="6" />
+      <path d="M32 17.5v18" stroke="#42F5AD" strokeWidth="6" />
+      <path d="M24 12.5a13 13 0 0 1 16 0" stroke="#27C7F5" strokeWidth="4" />
+      <path d="M18 6.5a22 22 0 0 1 28 0" stroke="#27C7F5" strokeWidth="4" />
+    </g>
+  )
+}
+
+// ─── Remote Wake: toque no app → magic packet → o PC liga e o Linux sobe ───
+function RemoteWake() {
+  const boot = ['[  OK  ] Started Network Manager.', '[  OK  ] Reached target Network.', '[  OK  ] Started OpenSSH Server.', '[  OK  ] Reached target Graphical.']
+  return (
+    <Moldura rotulo="Capa do Remote Wake: toque no celular envia o sinal e o computador liga o Linux">
+      {/* celular com o app */}
+      <rect x="46" y="62" width="70" height="128" rx="11" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.5" />
+      <rect x="54" y="76" width="54" height="96" rx="4" fill="#0b1411" />
+      <MarcaRemoteWake x={67} y={84} escala={0.44} />
+      <text x="81" y="128" textAnchor="middle" className="fill-[#8fd9bd] font-mono text-[6px]">
+        PC do escritório
+      </text>
+      <g className="rw-botao">
+        <rect x="62" y="138" width="38" height="16" rx="8" fill="#42F5AD" />
+        <text x="81" y="149" textAnchor="middle" className="fill-[#0b1411] font-mono text-[7px] font-semibold">
+          LIGAR
+        </text>
+      </g>
+      <circle cx="81" cy="146" r="10" fill="none" stroke="#42F5AD" strokeWidth="1.5" className="rw-toque" />
+      <rect x="72" y="178" width="18" height="3" rx="1.5" fill="var(--apagado)" />
+
+      {/* magic packet indo até o PC */}
+      <g fill="none" stroke="#27C7F5" strokeWidth="2.2" strokeLinecap="round">
+        {[0, 1, 2, 3].map((i) => (
+          <path key={i} d={`M${132 + i * 20} ${104 - i * 5} q 11 ${22 + i * 5} 0 ${44 + i * 10}`} className="rw-onda" style={atraso(i * 0.22)} />
         ))}
       </g>
-      <text x="175" y="200" textAnchor="middle" className="fill-apagado font-mono text-[10px]">
-        FF:FF:FF:FF:FF:FF ×16
+      <text x="170" y="200" textAnchor="middle" className="rw-pacote fill-apagado font-mono text-[8.5px]">
+        magic packet → :9
       </text>
+
       {/* monitor */}
-      <rect x="216" y="62" width="140" height="98" rx="6" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.5" />
-      <rect x="226" y="72" width="120" height="78" rx="2" fill="var(--superficie)" />
-      <path d="M270 172 h32 l6 16 h-44 z" fill="var(--linha)" />
-      {/* marca do Remote Wake no centro da tela */}
-      <g transform="translate(262 83) scale(0.75)">
-        <path d="M17.5 27.5a21 21 0 1 0 29 0" stroke="#42F5AD" strokeWidth="6" strokeLinecap="round" fill="none" />
-        <path d="M32 17.5v18" stroke="#42F5AD" strokeWidth="6" strokeLinecap="round" />
-        <path d="M24 12.5a13 13 0 0 1 16 0" stroke="#27C7F5" strokeWidth="4" strokeLinecap="round" fill="none" />
-        <path d="M18 6.5a22 22 0 0 1 28 0" stroke="#27C7F5" strokeWidth="4" strokeLinecap="round" fill="none" />
+      <rect x="212" y="54" width="152" height="106" rx="6" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.5" />
+      <rect x="221" y="63" width="134" height="86" rx="2" fill="#020304" />
+      <g className="rw-tela">
+        {/* pinguim do boot */}
+        <g transform="translate(229 69)" className="rw-tux">
+          <ellipse cx="7" cy="10" rx="6" ry="8" fill="#111" stroke="#666" strokeWidth="0.4" />
+          <ellipse cx="7" cy="12" rx="3.6" ry="5.4" fill="#f2f2f2" />
+          <circle cx="5.4" cy="5.6" r="1" fill="#fff" />
+          <circle cx="8.6" cy="5.6" r="1" fill="#fff" />
+          <path d="M5.6 7.6 h2.8 l-1.4 1.6 z" fill="#f5b83d" />
+          <ellipse cx="4.4" cy="18.2" rx="2.2" ry="0.9" fill="#f5b83d" />
+          <ellipse cx="9.6" cy="18.2" rx="2.2" ry="0.9" fill="#f5b83d" />
+        </g>
+        {boot.map((l, i) => (
+          <text key={l} x="228" y={98 + i * 9} className="rw-linha font-mono text-[6.4px]" style={atraso(i * 0.45)}>
+            <tspan className="fill-[#4ade80]">{l.slice(0, 8)}</tspan>
+            <tspan className="fill-[#c9d1d9]">{l.slice(8)}</tspan>
+          </text>
+        ))}
+        <text x="244" y="80" className="rw-linha fill-[#8b949e] font-mono text-[6.4px]" style={atraso(0)}>
+          Linux 6.8 · booting…
+        </text>
+        <text x="228" y="142" className="rw-prompt font-mono text-[6.8px]">
+          <tspan className="fill-[#4ade80]">victor@pc</tspan>
+          <tspan className="fill-[#c9d1d9]">:~$ </tspan>
+          <tspan className="rw-cursor fill-[#c9d1d9]">▌</tspan>
+        </text>
       </g>
-      <text x="286" y="214" textAnchor="middle" className="fill-suave font-mono text-[10px]">
+      <circle cx="349" cy="154" r="1.8" className="rw-led" />
+      <path d="M268 172 h40 l6 16 h-52 z" fill="var(--linha)" />
+      <text x="288" y="212" textAnchor="middle" className="fill-suave font-mono text-[9.5px]">
         Wake-on-LAN · PWA
       </text>
     </Moldura>
   )
 }
 
-// ─── StabilMoney: marca + os "bolsos" do saldo ─────────────────
+// ─── StabilMoney: ícone do app + os "bolsos" variando ─────────────────
 function StabilMoney() {
-  const bolsos = [
-    { rotulo: 'bruto', v: 1, cor: 'var(--apagado)' },
-    { rotulo: 'reservado', v: 0.42, cor: '#8fbf9f' },
-    { rotulo: 'disponível', v: 0.58, cor: '#1f8a4c' },
-  ]
   return (
-    <Moldura rotulo="Capa do StabilMoney: marca do app e o saldo dividido em bolsos">
-      <image href="/capas/stabilmoney-mark.png" x="44" y="62" width="112" height="112" />
-      <text x="100" y="200" textAnchor="middle" className="fill-texto text-[15px] font-semibold">
+    <Moldura rotulo="Capa do StabilMoney: ícone do app e o saldo dividido em bruto, reservado e disponível">
+      <g className="sm-icone">
+        <rect x="46" y="58" width="108" height="108" rx="24" fill="#0f3d2c" />
+        <svg x="58" y="70" width="84" height="84" viewBox="150 145 725 715">
+          <path d={STABILMONEY_D} fill="#ffffff" />
+        </svg>
+      </g>
+      <text x="100" y="196" textAnchor="middle" className="fill-texto text-[15px] font-semibold">
         Stabil Money
       </text>
-      <g transform="translate(200 70)">
-        {bolsos.map((b, i) => (
-          <g key={b.rotulo} transform={`translate(0 ${i * 40})`}>
+      <g transform="translate(196 66)">
+        {[
+          ['bruto', 'var(--apagado)', ''],
+          ['reservado', '#8fbf9f', 'sm-reservado'],
+          ['disponível', '#1f8a4c', 'sm-disponivel'],
+        ].map(([rotulo, cor, anim], i) => (
+          <g key={rotulo} transform={`translate(0 ${i * 40})`}>
             <text x="0" y="0" className="fill-suave font-mono text-[10px]">
-              {b.rotulo}
+              {rotulo}
             </text>
-            <rect x="0" y="7" width="160" height="12" rx="3" fill="var(--linha)" />
-            <rect x="0" y="7" width={160 * b.v} height="12" rx="3" fill={b.cor} />
+            <rect x="0" y="7" width="168" height="12" rx="3" fill="var(--linha)" />
+            <rect x="0" y="7" width="168" height="12" rx="3" fill={cor} className={anim} />
           </g>
         ))}
         <text x="0" y="128" className="fill-apagado font-mono text-[9px]">
@@ -91,24 +142,23 @@ function StabilMoney() {
   )
 }
 
-// ─── Fluxo de Agentes: a esteira de IAs ────────────────────────
+// ─── Fluxo de Agentes: cada etapa acende e passa a vez para a próxima ─────
 function FluxoAgentes() {
   const etapas = ['arquiteto', 'você', 'executor', 'checks', 'revisor']
   const x = (i: number) => 44 + i * 78
+  const PASSO = 1.6 // segundos em cada etapa; ciclo de 8 s
   return (
-    <Moldura rotulo="Capa do Fluxo de Agentes: esteira arquiteto, você, executor, checks e revisor">
-      {/* esteira: cada trecho acende logo depois da etapa de onde sai */}
+    <Moldura rotulo="Capa do Fluxo de Agentes: arquiteto, você, executor, checks e revisor acendendo em sequência">
       {etapas.slice(0, -1).map((e, i) => (
-        <line key={e} x1={x(i) + 22} y1="118" x2={x(i + 1) - 22} y2="118" strokeWidth="2" className="seg-fluxo" style={{ animationDelay: `${i}s` }} />
+        <line key={e} x1={x(i) + 22} y1="118" x2={x(i + 1) - 22} y2="118" strokeWidth="2" className="fx-seg" style={atraso(i * PASSO)} />
       ))}
-      {/* as etapas acendem uma de cada vez, 1 s cada, em ciclo de 5 s */}
       {etapas.map((e, i) => (
         <g key={e}>
-          <circle cx={x(i)} cy="118" r="22" strokeWidth="1.5" className="no-fluxo" style={{ animationDelay: `${i}s` }} />
-          <text x={x(i)} y="123" textAnchor="middle" className="txt-fluxo font-mono text-[13px]" style={{ animationDelay: `${i}s` }}>
+          <circle cx={x(i)} cy="118" r="22" strokeWidth="1.6" className="fx-no" style={atraso(i * PASSO)} />
+          <text x={x(i)} y="123" textAnchor="middle" className="fx-txt font-mono text-[13px]" style={atraso(i * PASSO)}>
             {['A', '✓', 'E', '▶', 'R'][i]}
           </text>
-          <text x={x(i)} y="160" textAnchor="middle" className="txt-fluxo font-mono text-[9.5px]" style={{ animationDelay: `${i}s` }}>
+          <text x={x(i)} y="160" textAnchor="middle" className="fx-txt font-mono text-[9.5px]" style={atraso(i * PASSO)}>
             {e}
           </text>
         </g>
@@ -123,42 +173,66 @@ function FluxoAgentes() {
   )
 }
 
-// ─── BigData Analytics: mini dashboard ─────────────────────────
+// ─── BigData Analytics: painel com os gráficos se mexendo ───────────────
 function BigData() {
-  const barras = [0.5, 0.8, 0.35, 0.65, 0.9, 0.55]
+  const barras: [number, number][] = [
+    [0.5, 0.8],
+    [0.8, 0.45],
+    [0.35, 0.7],
+    [0.65, 0.9],
+    [0.9, 0.55],
+    [0.55, 0.3],
+  ]
   const area = [30, 44, 38, 60, 52, 70, 64, 82]
   const px = (i: number) => 214 + i * 22
   const py = (v: number) => 208 - v
+  const linha = area.map((v, i) => `${i ? 'L' : 'M'}${px(i)} ${py(v)}`).join(' ')
   return (
-    <Moldura rotulo="Capa do BigData Analytics: painel com indicadores e gráficos">
-      {[0, 1, 2].map((i) => (
-        <g key={i}>
+    <Moldura rotulo="Capa do BigData Analytics: painel com indicadores e gráficos animados">
+      {[
+        ['alunos', '1.284'],
+        ['nota média', '7,8'],
+        ['tempo médio', '42 min'],
+      ].map(([rotulo, v], i) => (
+        <g key={rotulo}>
           <rect x={30 + i * 116} y="30" width="104" height="42" rx="5" fill="var(--fundo)" stroke="var(--linha)" />
-          <rect x={40 + i * 116} y="40" width="40" height="5" rx="2" fill="var(--linha)" />
-          <text x={40 + i * 116} y="64" className="fill-texto font-mono text-[13px]">
-            {['1.284', '7,8', '42 min'][i]}
+          <text x={40 + i * 116} y="46" className="fill-apagado font-mono text-[8px]">
+            {rotulo}
+          </text>
+          <text x={40 + i * 116} y="64" className="bd-kpi fill-texto font-mono text-[13px]" style={atraso(i * 0.7)}>
+            {v}
           </text>
         </g>
       ))}
-      {/* rosca */}
+      {/* rosca: a fatia principal cresce e encolhe */}
       <g transform="translate(80 150)">
         <circle r="38" fill="none" stroke="var(--linha)" strokeWidth="14" />
-        <circle r="38" fill="none" stroke="var(--destaque)" strokeWidth="14" strokeDasharray="130 239" transform="rotate(-90)" />
-        <circle r="38" fill="none" stroke="var(--suave)" strokeWidth="14" strokeDasharray="60 239" strokeDashoffset="-132" transform="rotate(-90)" />
+        <circle r="38" fill="none" stroke="var(--suave)" strokeWidth="14" strokeDasharray="239 239" transform="rotate(-90)" />
+        <circle r="38" fill="none" stroke="var(--destaque)" strokeWidth="14" strokeDasharray="130 239" transform="rotate(-90)" className="bd-rosca" />
       </g>
-      {/* barras */}
-      {barras.map((b, i) => (
-        <rect key={i} x={140 + i * 10} y={188 - b * 70} width="6" height={b * 70} rx="1.5" fill="var(--apagado)" />
+      {/* barras subindo e descendo */}
+      {barras.map(([a, b], i) => (
+        <rect
+          key={i}
+          x={140 + i * 10}
+          y={118}
+          width="6"
+          height="70"
+          rx="1.5"
+          fill="var(--apagado)"
+          className="bd-barra"
+          style={{ ['--a' as string]: a, ['--b' as string]: b, animationDelay: `${i * 0.25}s` } as CSSProperties}
+        />
       ))}
-      {/* área */}
-      <path d={`M${px(0)} 208 ${area.map((v, i) => `L${px(i)} ${py(v)}`).join(' ')} L${px(7)} 208 Z`} fill="var(--destaque)" opacity="0.18" />
-      <path d={area.map((v, i) => `${i ? 'L' : 'M'}${px(i)} ${py(v)}`).join(' ')} fill="none" stroke="var(--destaque)" strokeWidth="2" />
+      {/* área: a linha se desenha e a área aparece */}
+      <path d={`M${px(0)} 208 ${area.map((v, i) => `L${px(i)} ${py(v)}`).join(' ')} L${px(7)} 208 Z`} fill="var(--destaque)" className="bd-area" />
+      <path d={linha} fill="none" stroke="var(--destaque)" strokeWidth="2" pathLength={100} className="bd-linha" />
       <line x1="210" y1="208" x2="376" y2="208" stroke="var(--linha)" />
     </Moldura>
   )
 }
 
-// ─── Gerenciador de Empréstimos: janela desktop com a tabela ───────
+// ─── Gerenciador de Empréstimos: janela desktop com a tabela ─────────────
 function Emprestimos() {
   const linhas = [
     ['Furadeira', 'Ana', 'devolvida'],
@@ -183,15 +257,17 @@ function Emprestimos() {
         </text>
       ))}
       <line x1="52" y1="84" x2="348" y2="84" stroke="var(--linha)" />
+      {/* seleção percorrendo as linhas, como alguém navegando na tabela */}
+      <rect x="48" y="88" width="304" height="22" rx="3" className="emp-selecao" />
       {linhas.map((l, i) => (
-        <g key={l[0]} transform={`translate(0 ${100 + i * 26})`}>
+        <g key={l[0]} transform={`translate(0 ${103 + i * 26})`}>
           <text x="56" y="0" className="fill-texto text-[11px]">
             {l[0]}
           </text>
           <text x="164" y="0" className="fill-suave text-[11px]">
             {l[1]}
           </text>
-          <rect x="268" y="-10" width="64" height="15" rx="7.5" fill={l[2] === 'ativo' ? 'var(--destaque)' : 'var(--linha)'} opacity={l[2] === 'ativo' ? 0.9 : 1} />
+          <rect x="268" y="-10" width="64" height="15" rx="7.5" fill={l[2] === 'ativo' ? 'var(--destaque)' : 'var(--linha)'} />
           <text x="300" y="1" textAnchor="middle" className={`font-mono text-[9px] ${l[2] === 'ativo' ? 'fill-fundo' : 'fill-suave'}`}>
             {l[2]}
           </text>

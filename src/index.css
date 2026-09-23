@@ -213,30 +213,141 @@ button:not(:disabled),
   animation: rolar-telemetria 70s linear infinite;
 }
 
-/* Capa do Fluxo de Agentes: etapas acendendo em sequência (ciclo de 5 s, 1 s cada) */
-@keyframes fluxo-no {
-  0%, 18% { stroke: var(--destaque); fill: color-mix(in oklab, var(--destaque) 20%, var(--fundo)); }
-  22%, 100% { stroke: var(--apagado); fill: var(--fundo); }
+/* ─── Capas animadas dos projetos ──────────────────────────── */
+
+/* Fluxo de Agentes: ciclo de 8 s, 1,6 s por etapa; cada etapa acende, segura e apaga suave */
+@keyframes fx-no {
+  0% { stroke: var(--apagado); fill: var(--fundo); transform: scale(1); }
+  5%, 17% { stroke: var(--destaque); fill: color-mix(in oklab, var(--destaque) 22%, var(--fundo)); transform: scale(1.08); }
+  25%, 100% { stroke: var(--apagado); fill: var(--fundo); transform: scale(1); }
 }
-@keyframes fluxo-txt {
-  0%, 18% { fill: var(--destaque); }
-  22%, 100% { fill: var(--suave); }
+@keyframes fx-txt {
+  0% { fill: var(--suave); }
+  5%, 17% { fill: var(--destaque); }
+  25%, 100% { fill: var(--suave); }
 }
-@keyframes fluxo-seg {
-  0%, 12% { stroke: var(--linha); }
-  16%, 24% { stroke: var(--destaque); }
-  28%, 100% { stroke: var(--linha); }
+@keyframes fx-seg {
+  0%, 14% { stroke: var(--linha); }
+  19%, 23% { stroke: var(--destaque); }
+  30%, 100% { stroke: var(--linha); }
 }
-.no-fluxo {
-  stroke: var(--apagado);
-  fill: var(--fundo);
-  animation: fluxo-no 5s linear infinite;
+.fx-no { stroke: var(--apagado); fill: var(--fundo); transform-box: fill-box; transform-origin: center; animation: fx-no 8s ease-in-out infinite; }
+.fx-txt { fill: var(--suave); animation: fx-txt 8s ease-in-out infinite; }
+.fx-seg { stroke: var(--linha); animation: fx-seg 8s ease-in-out infinite; }
+
+/* Remote Wake: ciclo de 9 s — toque, ondas, LED, boot, prompt, desliga */
+@keyframes rw-toque {
+  0%, 2% { opacity: 0; transform: scale(0.4); }
+  4% { opacity: 0.9; }
+  14%, 100% { opacity: 0; transform: scale(2.2); }
 }
-.txt-fluxo {
-  fill: var(--suave);
-  animation: fluxo-txt 5s linear infinite;
+@keyframes rw-botao {
+  0%, 2%, 8%, 100% { transform: scale(1); filter: none; }
+  4% { transform: scale(0.9); filter: brightness(1.3); }
 }
-.seg-fluxo {
-  stroke: var(--linha);
-  animation: fluxo-seg 5s linear infinite;
+@keyframes rw-onda {
+  0%, 6% { opacity: 0; transform: translateX(-8px); }
+  11% { opacity: 1; }
+  20%, 100% { opacity: 0; transform: translateX(14px); }
+}
+@keyframes rw-pacote {
+  0%, 6% { opacity: 0.2; }
+  10%, 24% { opacity: 1; }
+  30%, 100% { opacity: 0.2; }
+}
+@keyframes rw-led {
+  0%, 24% { fill: #3a3f47; }
+  26%, 90% { fill: #4ade80; }
+  94%, 100% { fill: #3a3f47; }
+}
+@keyframes rw-tela {
+  0%, 25% { opacity: 0; }
+  28%, 90% { opacity: 1; }
+  95%, 100% { opacity: 0; }
+}
+@keyframes rw-linha {
+  0%, 32% { opacity: 0; }
+  35%, 100% { opacity: 1; }
+}
+@keyframes rw-prompt {
+  0%, 62% { opacity: 0; }
+  65%, 100% { opacity: 1; }
+}
+@keyframes rw-cursor {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.rw-toque { transform-box: fill-box; transform-origin: center; opacity: 0; animation: rw-toque 9s ease-out infinite; }
+.rw-botao { transform-box: fill-box; transform-origin: center; animation: rw-botao 9s ease-in-out infinite; }
+.rw-onda { opacity: 0; animation: rw-onda 9s ease-out infinite; }
+.rw-pacote { animation: rw-pacote 9s ease-in-out infinite; }
+.rw-led { fill: #3a3f47; animation: rw-led 9s linear infinite; }
+.rw-tela { opacity: 0; animation: rw-tela 9s ease-in-out infinite; }
+.rw-linha { opacity: 0; animation: rw-linha 9s steps(1) infinite; }
+.rw-prompt { opacity: 0; animation: rw-prompt 9s steps(1) infinite; }
+.rw-cursor { animation: rw-cursor 0.9s steps(1) infinite; }
+
+/* StabilMoney: o reservado cresce, o disponível encolhe na mesma medida */
+@keyframes sm-reservado {
+  0%, 100% { transform: scaleX(0.32); }
+  50% { transform: scaleX(0.6); }
+}
+@keyframes sm-disponivel {
+  0%, 100% { transform: scaleX(0.68); }
+  50% { transform: scaleX(0.4); }
+}
+@keyframes sm-icone {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 0 rgba(31, 138, 76, 0)); }
+  50% { transform: translateY(-5px); filter: drop-shadow(0 8px 18px rgba(31, 138, 76, 0.55)); }
+}
+.sm-reservado, .sm-disponivel { transform-box: fill-box; transform-origin: left center; }
+.sm-reservado { transform: scaleX(0.32); animation: sm-reservado 6s ease-in-out infinite; }
+.sm-disponivel { transform: scaleX(0.68); animation: sm-disponivel 6s ease-in-out infinite; }
+.sm-icone { animation: sm-icone 4s ease-in-out infinite; }
+
+/* BigData: barras oscilando, rosca mudando, linha se desenhando */
+@keyframes bd-barra {
+  0%, 100% { transform: scaleY(var(--a)); }
+  50% { transform: scaleY(var(--b)); }
+}
+@keyframes bd-rosca {
+  0%, 100% { stroke-dasharray: 110 239; }
+  50% { stroke-dasharray: 165 239; }
+}
+@keyframes bd-linha {
+  0% { stroke-dashoffset: 100; }
+  45%, 85% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -100; }
+}
+@keyframes bd-area {
+  0%, 15% { opacity: 0; }
+  45%, 80% { opacity: 0.2; }
+  100% { opacity: 0; }
+}
+@keyframes bd-kpi {
+  0%, 90%, 100% { opacity: 1; }
+  94% { opacity: 0.35; }
+}
+.bd-barra { transform-box: fill-box; transform-origin: bottom; transform: scaleY(var(--a)); animation: bd-barra 3.2s ease-in-out infinite; }
+.bd-rosca { animation: bd-rosca 5s ease-in-out infinite; }
+.bd-linha { stroke-dasharray: 100 100; animation: bd-linha 6s ease-in-out infinite; }
+.bd-area { opacity: 0.2; animation: bd-area 6s ease-in-out infinite; }
+.bd-kpi { animation: bd-kpi 4s ease-in-out infinite; }
+
+/* Empréstimos: seleção descendo pelas linhas da tabela */
+@keyframes emp-selecao {
+  0%, 20% { transform: translateY(0); }
+  25%, 45% { transform: translateY(26px); }
+  50%, 70% { transform: translateY(52px); }
+  75%, 95% { transform: translateY(78px); }
+  100% { transform: translateY(0); }
+}
+.emp-selecao { fill: color-mix(in oklab, var(--destaque) 12%, transparent); animation: emp-selecao 8s ease-in-out infinite; }
+
+/* Sem animação: capas no estado final "interessante" (PC ligado, Linux no ar) */
+@media (prefers-reduced-motion: reduce) {
+  .rw-tela, .rw-linha, .rw-prompt { opacity: 1 !important; }
+  .rw-led { fill: #4ade80 !important; }
+  .bd-area { opacity: 0.2 !important; }
+  .bd-linha { stroke-dashoffset: 0 !important; }
 }

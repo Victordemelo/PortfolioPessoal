@@ -6,9 +6,9 @@ import { ultimaAtividade, useUltimosPushes } from '../lib/repos'
 import { CapaProjeto } from './Capas'
 import { GithubIcon } from './Icones'
 
-function Bloco({ titulo, children }: { titulo: string; children: ReactNode }) {
+function Bloco({ id, titulo, children }: { id: string; titulo: string; children: ReactNode }) {
   return (
-    <section className="mt-10">
+    <section id={id} className="mt-10 scroll-mt-6">
       <h2 className="mb-4 border-b border-linha pb-2 font-mono text-xs tracking-widest text-apagado uppercase">{titulo}</h2>
       {children}
     </section>
@@ -50,7 +50,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
         <ArrowLeft size={14} /> todos os projetos
       </a>
 
-      <header className="mt-6">
+      <header id="visao" className="mt-6 scroll-mt-6">
         {p.contexto && <p className="font-mono text-xs tracking-widest text-destaque uppercase">{p.contexto}</p>}
         <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">{p.nome}</h1>
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-suave">{p.resumo}</p>
@@ -77,7 +77,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
       </dl>
 
       <div className="grid gap-x-12 lg:grid-cols-[1fr_220px]">
-        <Bloco titulo={`Destaques · ${p.destaques.length}`}>
+        <Bloco id="destaques" titulo={`Destaques · ${p.destaques.length}`}>
           <ul className="space-y-3 leading-relaxed">
             {p.destaques.map((d) => (
               <li key={d} className="grid grid-cols-[1.25rem_1fr]">
@@ -88,7 +88,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
           </ul>
         </Bloco>
         <div>
-          <Bloco titulo="Stack">
+          <Bloco id="stack-projeto" titulo="Stack">
             <ul className="flex flex-wrap gap-1.5">
               {p.stack.map((s) => (
                 <li key={s} className="rounded border border-linha px-2 py-1 font-mono text-xs">
@@ -98,7 +98,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
             </ul>
           </Bloco>
           {links.length > 0 && (
-            <Bloco titulo="Links">
+            <Bloco id="links" titulo="Links">
               <ul className="space-y-2">
                 {links.map((l) => (
                   <li key={l.href}>
