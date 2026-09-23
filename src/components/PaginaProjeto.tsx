@@ -60,7 +60,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
         {p.imagem ? (
           <img src={p.imagem} alt={`Foto do projeto ${p.nome}`} className="aspect-[16/8] w-full object-cover" />
         ) : (
-          <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/8]" />
+          <CapaProjeto id={p.id} nome={p.nome} className="aspect-[16/8]" interativo />
         )}
       </div>
 

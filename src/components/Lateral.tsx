@@ -158,7 +158,7 @@ function Conquistas() {
 
 export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Projeto }) {
   return (
-    <aside className="flex flex-col gap-7 pt-6 pb-4 lg:sticky lg:top-0 lg:h-svh lg:overflow-y-auto lg:py-10">
+    <aside className="sem-barra flex flex-col gap-7 pt-6 pb-4 lg:sticky lg:top-0 lg:h-svh lg:overflow-y-auto lg:py-10">
       <div className="flex items-center justify-between">
         <a href="/" aria-label="Início" onClick={() => window.scrollTo({ top: 0 })} className="text-texto transition hover:text-destaque">
           <Logo className="h-5" />
@@ -174,25 +174,28 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
         </div>
       </div>
 
-      <dl className="rounded-lg border border-linha bg-superficie px-3">
-        <p className="-mx-3 border-b border-linha px-3 py-1.5 font-mono text-[10px] tracking-widest text-apagado uppercase">Características</p>
-        <Linha k="status">
-          <span className="inline-flex items-center gap-2">
-            <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" /> disponível para projetos
-          </span>
-        </Linha>
-        <Linha k="trabalho">
-          <span className="block truncate">{perfil.cargo}</span>
-          <span className="block truncate text-xs text-suave">{perfil.empresa}</span>
-        </Linha>
-        <Linha k="local">{perfil.local}</Linha>
-        <Linha k="formação">Eng. da Computação · Unisul</Linha>
-        <Linha k="e-mail">
-          <a href={`mailto:${perfil.contato.email}`} className="hover:text-destaque">
-            {perfil.contato.email}
-          </a>
-        </Linha>
-      </dl>
+      {/* dentro de um projeto, a ficha sai para o menu falar só do projeto */}
+      {!projeto && (
+        <dl className="rounded-lg border border-linha bg-superficie px-3">
+          <p className="-mx-3 border-b border-linha px-3 py-1.5 font-mono text-[10px] tracking-widest text-apagado uppercase">Características</p>
+          <Linha k="status">
+            <span className="inline-flex items-center gap-2">
+              <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" /> disponível para projetos
+            </span>
+          </Linha>
+          <Linha k="trabalho">
+            <span className="block truncate">{perfil.cargo}</span>
+            <span className="block truncate text-xs text-suave">{perfil.empresa}</span>
+          </Linha>
+          <Linha k="local">{perfil.local}</Linha>
+          <Linha k="formação">Eng. da Computação · Unisul</Linha>
+          <Linha k="e-mail">
+            <a href={`mailto:${perfil.contato.email}`} className="hover:text-destaque">
+              {perfil.contato.email}
+            </a>
+          </Linha>
+        </dl>
+      )}
 
       <Conquistas />
 

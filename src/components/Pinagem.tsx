@@ -60,6 +60,12 @@ const PARES: [string, string][] = [
 ]
 const porNome = (nome: string) => pinos.find((p) => p.nome === nome)!.n
 
+/** Pinos que trabalham com este (os pares em que ele aparece) */
+function parceiros(n: number) {
+  const nome = pinos.find((p) => p.n === n)?.nome
+  return PARES.filter((par) => par.includes(nome!)).map(([a, b]) => porNome(a === nome ? b : a))
+}
+
 /** Caminho da corrente: sai da ponta do pino A, entra no chip, cruza e sai pela ponta do pino B */
 function trajeto(a: number, b: number) {
   const pa = pinos.find((p) => p.n === a)!
@@ -73,7 +79,7 @@ function trajeto(a: number, b: number) {
   return `M${ponta(A.esquerda)} ${A.y} H${borda(A.esquerda)} H${meio} V${B.y} H${borda(B.esquerda)} H${ponta(B.esquerda)}`
 }
 
-/** Sorteia um par a cada 1,8 s, só com a figura visível na tela e sem "reduzir movimento" */
+/** Sorteia um par a cada 3,2 s, só com a figura visível na tela e sem "reduzir movimento" */
 function useCorrente(ref: React.RefObject<HTMLElement | null>) {
   const [par, setPar] = useState<{ a: number; b: number; volta: number } | null>(null)
   useEffect(() => {
@@ -91,7 +97,7 @@ function useCorrente(ref: React.RefObject<HTMLElement | null>) {
       clearInterval(t)
       if (e.isIntersecting) {
         sortear()
-        t = window.setInterval(sortear, 1800)
+        t = window.setInterval(sortear, 3200)
       }
     })
     obs.observe(ref.current)
@@ -107,8 +113,10 @@ export function Pinagem() {
   const [hover, setAtivo] = useState<number | null>(null)
   const figura = useRef<HTMLElement>(null)
   const corrente = useCorrente(figura)
-  // Com o mouse num pino, ele manda; senão, acendem os dois pinos da corrente
-  const acesos = hover !== null ? [hover] : corrente ? [corrente.a, corrente.b] : []
+  // Mouse num pino: a corrente sai dele para todos os parceiros, em loop.
+  // Sem mouse: um par sorteado de cada vez.
+  const ligados = hover !== null ? parceiros(hover) : []
+  const acesos = hover !== null ? [hover, ...ligados] : corrente ? [corrente.a, corrente.b] : []
   const ativo = hover
   const atual = pinos.find((p) => p.n === ativo)
 
@@ -121,6 +129,13 @@ export function Pinagem() {
             {/* corpo do chip */}
             <rect x={CX0} y={CY0} width={CX1 - CX0} height={CY1 - CY0} rx="6" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.2" />
             {/* corrente elétrica entre dois pinos sorteados */}
+            {hover !== null &&
+              ligados.map((b, i) => (
+                <g key={`${hover}-${b}`} fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={trajeto(hover, b)} stroke="var(--destaque)" strokeWidth="1.2" className="trilha-fixa" />
+                  <path d={trajeto(hover, b)} stroke="var(--destaque)" strokeWidth="2.6" pathLength={100} className="pulso-continuo" style={{ animationDelay: `${i * 0.45}s` }} />
+                </g>
+              ))}
             {corrente && hover === null && (
               <g key={corrente.volta} fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path d={trajeto(corrente.a, corrente.b)} stroke="var(--destaque)" strokeWidth="1.2" className="trilha-corrente" />
@@ -212,6 +227,9 @@ export function Pinagem() {
             {atual ? (
               <>
                 <span className="text-destaque">pino {atual.n} · {atual.nome}</span> <span className="text-suave">— {descricao(atual)}</span>
+                {ligados.length > 0 && (
+                  <span className="text-suave"> · conecta com {ligados.map((n) => pinos.find((p) => p.n === n)?.nome).join(', ')}</span>
+                )}
               </>
             ) : (
               corrente ? (
