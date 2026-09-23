@@ -1,0 +1,89 @@
+# Push na main → compila o site (checagem) → entra no servidor por SSH e roda
+# scripts/deploy.sh → confere se https://victordemelo.com.br respondeu.
+#
+# Configuração do servidor e dos secrets: docs/DEPLOY.md
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # botão "Run workflow" na aba Actions
+
+# Um deploy de cada vez; um push novo espera o anterior terminar
+concurrency:
+  group: deploy-producao
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  deploy:
+    name: Deploy no servidor
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: producao
+      url: https://victordemelo.com.br
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+    steps:
+      - name: Secrets configurados?
+        id: secrets
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ]; then
+            echo "::warning::Secrets de deploy não configurados; pulando o deploy (ver docs/DEPLOY.md)."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Chave SSH e host conhecido
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          # Fixa a identidade do servidor: sem isso, o SSH aceitaria qualquer máquina
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Deploy
+        if: steps.secrets.outputs.ok == 'true'
+        # O servidor ignora o comando enviado e roda scripts/deploy.sh (forced command)
+        run: |
+          ssh -i ~/.ssh/deploy -p "${DEPLOY_PORT:-22}" \
+            -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
+            "$DEPLOY_USER@$DEPLOY_HOST" deploy
+
+      - name: Site no ar?
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          for i in $(seq 1 10); do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' https://victordemelo.com.br/ || true)
+            echo "tentativa $i: HTTP $codigo"
+            [ "$codigo" = "200" ] && exit 0
+            sleep 6
+          done
+          echo "::error::https://victordemelo.com.br não respondeu 200 depois do deploy"
+          exit 1
+
+      - name: Apaga a chave
+        if: always()
+        run: rm -f ~/.ssh/deploy

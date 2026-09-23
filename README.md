@@ -51,10 +51,12 @@ SITE_ADDRESS=:80
 HTTP_PORT=8080
 ```
 
-Deploy, com o repositório em `/opt/apps/victordemelo`:
+**Deploy automático:** cada push na `main` compila o site no GitHub Actions e, se passar, roda [`scripts/deploy.sh`](scripts/deploy.sh) no servidor por SSH (atualiza o código, reconstrói o container e confere se subiu). Configuração do servidor e dos secrets em [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+Deploy na mão, com o repositório em `/opt/apps/victordemelo`:
 
 ```bash
-cd /opt/apps/victordemelo && git pull && docker compose up -d --build
+/opt/apps/victordemelo/scripts/deploy.sh
 ```
 
 Teste interno: `curl -I http://127.0.0.1:8080` deve responder `200 OK`.

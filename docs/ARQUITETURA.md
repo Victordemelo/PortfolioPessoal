@@ -48,7 +48,7 @@ Regras do container para conviver com o servidor:
 1. O Caddy não emite certificado nem escuta 443: `SITE_ADDRESS` é sempre `:80`, nunca o domínio.
 2. A porta é publicada só em localhost: `"127.0.0.1:${HTTP_PORT:-8088}:80"` (o Docker ignora o firewall do host quando publica em `0.0.0.0`).
 3. `.env` do servidor, fora do Git: `SITE_ADDRESS=:80` e `HTTP_PORT=8080`. Local continua em `http://localhost:8088`.
-4. Deploy: `git pull && docker compose up -d --build` em `/opt/apps/victordemelo` (clonado com Deploy Key só leitura).
+4. Deploy automático: push na `main` → GitHub Actions compila → SSH com forced command roda `scripts/deploy.sh` em `/opt/apps/victordemelo` (clonado com Deploy Key só leitura) → confere o site. Detalhes em [DEPLOY.md](DEPLOY.md).
 
 ## Componentes
 
@@ -96,4 +96,4 @@ Regras do container para conviver com o servidor:
 - **Prints dos sistemas** → colocar em `public/` e usar no campo `imagem` do projeto.
 - **Inglês** → duplicar `src/data` por idioma e adicionar um seletor.
 - **Métricas de visita** → Plausible ou Umami self-hosted no mesmo compose, sem cookies.
-- **Deploy automático** → GitHub Actions construindo a imagem e publicando na VPS por SSH.
+- **Imagem pronta no registro** → hoje o build do Docker roda no servidor (ARM64); se ficar lento, o Actions pode gerar a imagem multi-arquitetura no GHCR e o servidor só faz `docker compose pull`.
