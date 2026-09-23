@@ -17,7 +17,16 @@
       rel="stylesheet"
     />
     <link rel="preconnect" href="https://avatars.githubusercontent.com" />
+    <style>
+      /* Antes de qualquer CSS externo: fundo certo (sem piscar branco) e, com JS,
+         esconde o conteúdo em HTML puro que o seo.ts gera para buscadores; o
+         React desenha o site em seguida */
+      html { background: #0e0f11; }
+      html.claro { background: #f5f3ee; }
+      html.js .conteudo-estatico { display: none; }
+    </style>
     <script>
+      document.documentElement.classList.add('js')
       // Aplica o tema antes do primeiro paint para não piscar
       try {
         const t = localStorage.getItem('tema')

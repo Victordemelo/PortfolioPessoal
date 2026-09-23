@@ -76,7 +76,7 @@ function contatos() {
 }
 
 function paginaInicial(): Pagina {
-  const corpo = `<div style="${estilo}">
+  const corpo = `<div class="conteudo-estatico" style="${estilo}">
     <h1>${esc(perfil.nome)}</h1>
     <p>${esc(DESCRICAO)}</p>
     ${perfil.sobre.map((s) => `<p>${esc(s)}</p>`).join('')}
@@ -113,7 +113,7 @@ function paginaInicial(): Pagina {
 }
 
 function paginaProjeto(p: Projeto): Pagina {
-  const corpo = `<div style="${estilo}">
+  const corpo = `<div class="conteudo-estatico" style="${estilo}">
     <p><a href="/#projetos">← todos os projetos</a></p>
     <h1>${esc(p.nome)}</h1>
     ${p.contexto ? `<p>${esc(p.contexto)}</p>` : ''}
