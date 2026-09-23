@@ -194,6 +194,8 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
         </Linha>
       </dl>
 
+      <Conquistas />
+
       {projeto ? (
         <>
           <Indice titulo={`Neste projeto · ${projeto.nome}`} itens={secoesDoProjeto(projeto)} ativo={ativo} prefixo="#" />
@@ -202,8 +204,6 @@ export function Lateral({ ativo, projeto }: { ativo: string | null; projeto?: Pr
       ) : (
         <Indice titulo="Índice" itens={SECOES} ativo={ativo} prefixo="/#" />
       )}
-
-      <Conquistas />
 
       <div className="flex gap-2 lg:mt-auto">
         <Social href={linkWhatsapp()} rotulo="WhatsApp">

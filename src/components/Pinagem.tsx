@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { projetos } from '../data/projetos'
 import { stack, type Tecnologia } from '../data/stack'
 
@@ -40,18 +40,93 @@ function descricao(p: Pino) {
   return `${p.papel}${u}`
 }
 
+// Pares que trabalham juntos de verdade; a "corrente" passa entre eles por dentro do chip
+const PARES: [string, string][] = [
+  ['TypeScript', 'PostgreSQL'],
+  ['Laravel', 'Git'],
+  ['React', 'TypeScript'],
+  ['PHP', 'MySQL'],
+  ['Python', 'Django'],
+  ['Node.js', 'Docker'],
+  ['C# / .NET', 'PostgreSQL'],
+  ['Arduino', 'C++'],
+  ['Docker', 'Linux'],
+  ['Laravel', 'MySQL'],
+  ['Tailwind', 'React'],
+  ['Git', 'Linux'],
+  ['PHP', 'Laravel'],
+  ['Node.js', 'TypeScript'],
+  ['Python', 'PostgreSQL'],
+]
+const porNome = (nome: string) => pinos.find((p) => p.nome === nome)!.n
+
+/** Caminho da corrente: sai da ponta do pino A, entra no chip, cruza e sai pela ponta do pino B */
+function trajeto(a: number, b: number) {
+  const pa = pinos.find((p) => p.n === a)!
+  const pb = pinos.find((p) => p.n === b)!
+  const A = posicao(pa)
+  const B = posicao(pb)
+  const ponta = (esq: boolean) => (esq ? CX0 - PINO : CX1 + PINO)
+  const borda = (esq: boolean) => (esq ? CX0 : CX1)
+  // mesmo lado: faz um "U" rente à borda; lados opostos: atravessa pelo meio
+  const meio = A.esquerda === B.esquerda ? (A.esquerda ? CX0 + 26 : CX1 - 26) : (CX0 + CX1) / 2 + (A.y < B.y ? -14 : 14)
+  return `M${ponta(A.esquerda)} ${A.y} H${borda(A.esquerda)} H${meio} V${B.y} H${borda(B.esquerda)} H${ponta(B.esquerda)}`
+}
+
+/** Sorteia um par a cada 1,8 s, só com a figura visível na tela e sem "reduzir movimento" */
+function useCorrente(ref: React.RefObject<HTMLElement | null>) {
+  const [par, setPar] = useState<{ a: number; b: number; volta: number } | null>(null)
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !ref.current) return
+    let t: number | undefined
+    let ultimo = -1
+    const sortear = () => {
+      let i = Math.floor(Math.random() * PARES.length)
+      if (i === ultimo) i = (i + 1) % PARES.length
+      ultimo = i
+      const [x, y] = PARES[i]
+      setPar((p) => ({ a: porNome(x), b: porNome(y), volta: (p?.volta ?? 0) + 1 }))
+    }
+    const obs = new IntersectionObserver(([e]) => {
+      clearInterval(t)
+      if (e.isIntersecting) {
+        sortear()
+        t = window.setInterval(sortear, 1800)
+      }
+    })
+    obs.observe(ref.current)
+    return () => {
+      obs.disconnect()
+      clearInterval(t)
+    }
+  }, [ref])
+  return par
+}
+
 export function Pinagem() {
-  const [ativo, setAtivo] = useState<number | null>(null)
+  const [hover, setAtivo] = useState<number | null>(null)
+  const figura = useRef<HTMLElement>(null)
+  const corrente = useCorrente(figura)
+  // Com o mouse num pino, ele manda; senão, acendem os dois pinos da corrente
+  const acesos = hover !== null ? [hover] : corrente ? [corrente.a, corrente.b] : []
+  const ativo = hover
   const atual = pinos.find((p) => p.n === ativo)
 
   return (
     <div>
       {/* Figura: só a partir de sm, no celular vira tabela */}
-      <figure className="hidden sm:block">
+      <figure ref={figura} className="hidden sm:block">
         <div className="rounded-lg border border-linha bg-superficie p-4" onPointerLeave={() => setAtivo(null)}>
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Pinagem: a stack de tecnologias desenhada como os pinos de um chip">
             {/* corpo do chip */}
             <rect x={CX0} y={CY0} width={CX1 - CX0} height={CY1 - CY0} rx="6" fill="var(--fundo)" stroke="var(--apagado)" strokeWidth="1.2" />
+            {/* corrente elétrica entre dois pinos sorteados */}
+            {corrente && hover === null && (
+              <g key={corrente.volta} fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d={trajeto(corrente.a, corrente.b)} stroke="var(--destaque)" strokeWidth="1.2" className="trilha-corrente" />
+                <path d={trajeto(corrente.a, corrente.b)} stroke="var(--destaque)" strokeWidth="2.6" pathLength={100} className="pulso-corrente" />
+              </g>
+            )}
             <path d={`M${(CX0 + CX1) / 2 - 12} ${CY0} a12 12 0 0 0 24 0`} fill="var(--superficie)" stroke="var(--apagado)" strokeWidth="1.2" />
             <circle cx={CX0 + 34} cy={CY0 + 14} r="3.5" fill="var(--apagado)" />
             <text
@@ -70,12 +145,12 @@ export function Pinagem() {
               textAnchor="middle"
               className="fill-apagado font-mono text-[10px] tracking-widest"
             >
-              FULL STACK · FLORIPA
+              SOFTWARE · IOT · SC
             </text>
 
             {pinos.map((p) => {
               const { esquerda, y } = posicao(p)
-              const on = ativo === p.n
+              const on = acesos.includes(p.n)
               const alim = !p.tec
               const cor = on ? 'var(--destaque)' : alim ? 'var(--apagado)' : 'var(--suave)'
               const px = esquerda ? CX0 - PINO : CX1
@@ -139,7 +214,13 @@ export function Pinagem() {
                 <span className="text-destaque">pino {atual.n} · {atual.nome}</span> <span className="text-suave">— {descricao(atual)}</span>
               </>
             ) : (
-              <span className="text-apagado">passe o mouse num pino</span>
+              corrente ? (
+                <span className="text-suave">
+                  <span className="text-destaque">⚡ {pinos.find((p) => p.n === corrente.a)?.nome} ⇄ {pinos.find((p) => p.n === corrente.b)?.nome}</span> · passe o mouse num pino
+                </span>
+              ) : (
+                <span className="text-apagado">passe o mouse num pino</span>
+              )
             )}
           </span>
         </figcaption>

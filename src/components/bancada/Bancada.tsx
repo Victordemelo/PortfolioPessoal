@@ -96,12 +96,12 @@ export function Abertura() {
           Olá, eu sou o <span className="text-destaque">Victor</span>
           <span className="block text-texto/90">de Melo da Rosa.</span>
         </h1>
-        <p className="mt-6 max-w-xl text-lg leading-relaxed text-suave sm:text-xl">
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-suave sm:text-xl lg:max-w-lg">
           Desenvolvo software de ponta a ponta: <span className="text-texto">sistemas web, automações e integrações</span>, e levo isso até o
           hardware, com <span className="text-texto">microcontroladores, sensores e IoT</span>.
         </p>
 
-        <ul className="mt-7 flex max-w-xl flex-wrap gap-2">
+        <ul className="mt-7 flex max-w-xl flex-wrap gap-2 lg:max-w-md">
           {AREAS.map((a) => (
             <li key={a} className="rounded-md border border-linha bg-fundo/70 px-2.5 py-1 font-mono text-xs text-suave backdrop-blur-sm">
               {a}
@@ -127,16 +127,11 @@ export function Abertura() {
           </a>
         </div>
 
-        <p className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-apagado">
+        <p className="mt-8 flex max-w-md flex-col gap-1.5 font-mono text-xs text-apagado">
           <span className="flex items-center gap-2">
             <span className="pisca h-1.5 w-1.5 rounded-full bg-vivo" /> disponível para projetos
           </span>
-          {dados && (
-            <>
-              <span>·</span>
-              <span>{dados.total.toLocaleString('pt-BR')} contribuições no GitHub em 12 meses</span>
-            </>
-          )}
+          {dados && <span>{dados.total.toLocaleString('pt-BR')} contribuições no GitHub em 12 meses</span>}
         </p>
       </div>
 

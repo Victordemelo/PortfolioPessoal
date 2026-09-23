@@ -50,19 +50,28 @@ function RemoteWake() {
       <text x="81" y="128" textAnchor="middle" className="fill-[#8fd9bd] font-mono text-[6px]">
         PC do escritório
       </text>
+      {/* botão com três estados: LIGAR → ENVIANDO… → LIGADO ✓ */}
       <g className="rw-botao">
-        <rect x="62" y="138" width="38" height="16" rx="8" fill="#42F5AD" />
-        <text x="81" y="149" textAnchor="middle" className="fill-[#0b1411] font-mono text-[7px] font-semibold">
-          LIGAR
-        </text>
+        <rect x="59" y="138" width="44" height="16" rx="8" className="rw-botao-fundo" />
+        {[
+          ['LIGAR', 'rw-estado-1'],
+          ['ENVIANDO…', 'rw-estado-2'],
+          ['LIGADO ✓', 'rw-estado-3'],
+        ].map(([t, c]) => (
+          <text key={c} x="81" y="148.6" textAnchor="middle" className={`${c} fill-[#0b1411] font-mono text-[6.2px] font-semibold`}>
+            {t}
+          </text>
+        ))}
       </g>
-      <circle cx="81" cy="146" r="10" fill="none" stroke="#42F5AD" strokeWidth="1.5" className="rw-toque" />
+      <circle cx="81" cy="146" r="9" fill="none" stroke="#42F5AD" strokeWidth="1.2" className="rw-toque" />
+      {/* ponta do dedo: chega, aperta e sai */}
+      <circle cx="81" cy="146" r="6.5" className="rw-dedo" />
       <rect x="72" y="178" width="18" height="3" rx="1.5" fill="var(--apagado)" />
 
-      {/* magic packet indo até o PC */}
+      {/* magic packet indo até o PC (as ondas param antes do monitor) */}
       <g fill="none" stroke="#27C7F5" strokeWidth="2.2" strokeLinecap="round">
         {[0, 1, 2, 3].map((i) => (
-          <path key={i} d={`M${132 + i * 20} ${104 - i * 5} q 11 ${22 + i * 5} 0 ${44 + i * 10}`} className="rw-onda" style={atraso(i * 0.22)} />
+          <path key={i} d={`M${128 + i * 17} ${106 - i * 5} q 10 ${20 + i * 5} 0 ${40 + i * 10}`} className="rw-onda" style={atraso(0.55 + i * 0.2)} />
         ))}
       </g>
       <text x="170" y="200" textAnchor="middle" className="rw-pacote fill-apagado font-mono text-[8.5px]">
@@ -122,7 +131,7 @@ function StabilMoney() {
       </text>
       <g transform="translate(196 66)">
         {[
-          ['bruto', 'var(--apagado)', ''],
+          ['bruto', 'var(--apagado)', 'sm-bruto'],
           ['reservado', '#8fbf9f', 'sm-reservado'],
           ['disponível', '#1f8a4c', 'sm-disponivel'],
         ].map(([rotulo, cor, anim], i) => (
