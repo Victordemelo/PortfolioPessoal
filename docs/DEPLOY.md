@@ -72,7 +72,7 @@ Em **github.com/Victordemelo/PortfolioPessoal → Settings → Secrets and varia
 
 Aba **Actions → Deploy → Run workflow**. Os dois jobs (Build e Deploy no servidor) devem ficar verdes.
 
-O repositório é público: o Actions não gasta minutos da conta. Os secrets continuam fechados (não aparecem nos logs nem para quem abre PR de fork), e o workflow só roda em push na `main` ou disparo manual, então ninguém de fora consegue acionar um deploy.
+O repositório é privado: o Actions usa os minutos grátis da conta (2.000/mês no plano Free; cada deploy gasta cerca de 1 a 2 minutos).
 
 ## Deploy na mão (se o GitHub estiver fora)
 
