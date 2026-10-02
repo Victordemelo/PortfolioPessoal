@@ -31,8 +31,12 @@
 	header @html Cache-Control "no-cache"
 
 	# Robôs de varredura pedem /.env, /.git/config e afins o tempo todo: arquivo
-	# oculto nunca existe aqui, então recusa sem nem procurar
-	@ocultos path_regexp /\.
+	# oculto nunca existe aqui, então recusa sem nem procurar (menos /.well-known,
+	# que é padrão da web, usado por exemplo na renovação de certificado)
+	@ocultos {
+		path_regexp /\.
+		not path /.well-known/*
+	}
 	respond @ocultos 404
 
 	# /projetos/<id> tem página própria gerada no build (projetos/<id>/index.html).
