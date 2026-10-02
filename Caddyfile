@@ -30,8 +30,19 @@
 	@html not path /assets/* *.png *.svg *.webmanifest
 	header @html Cache-Control "no-cache"
 
-	# /projetos/<id> tem página própria gerada no build (projetos/<id>/index.html);
-	# qualquer outro caminho cai no index.html
-	try_files {path} {path}/index.html /index.html
+	# Robôs de varredura pedem /.env, /.git/config e afins o tempo todo: arquivo
+	# oculto nunca existe aqui, então recusa sem nem procurar
+	@ocultos path_regexp /\.
+	respond @ocultos 404
+
+	# /projetos/<id> tem página própria gerada no build (projetos/<id>/index.html).
+	# Caminho que não existe responde 404 (com o site, para quem errou o link),
+	# em vez de 200: assim nem o Google nem os robôs acham que ali tem algo
+	try_files {path} {path}/index.html
 	file_server
+
+	handle_errors 404 {
+		rewrite * /index.html
+		file_server
+	}
 }

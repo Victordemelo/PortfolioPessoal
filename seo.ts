@@ -165,6 +165,16 @@ function aplicar(html: string, p: Pagina) {
   return trocar(trocar(html, INI_HEAD, FIM_HEAD, cabecalho(p)), INI_CORPO, FIM_CORPO, p.corpo)
 }
 
+// Tira os comentários do HTML final (<!-- -->, /* */ do <style> e // do <script> inline):
+// eles documentam o código-fonte, mas não precisam aparecer no "ver código" do navegador
+function limpar(html: string) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/g, (_, a, css, b) => a + css.replace(/\/\*[\s\S]*?\*\//g, '') + b)
+    .replace(/(<script>)([\s\S]*?)(<\/script>)/g, (_, a, js, b) => a + js.replace(/^\s*\/\/.*$/gm, '') + b)
+    .replace(/\n\s*\n/g, '\n')
+}
+
 function sitemap() {
   const hoje = new Date().toISOString().slice(0, 10)
   const data = (p: Projeto) => p.ultimaAtividade ?? (p.fim && p.fim !== 'atual' ? `${p.fim}-01` : hoje)
@@ -235,8 +245,10 @@ export function seo(): Plugin {
       for (const p of projetos) {
         const dir = join(saida, 'projetos', p.id)
         mkdirSync(dir, { recursive: true })
-        writeFileSync(join(dir, 'index.html'), aplicar(base, paginaProjeto(p)))
+        writeFileSync(join(dir, 'index.html'), limpar(aplicar(base, paginaProjeto(p))))
       }
+      // por último: a página inicial precisava dos marcadores até aqui
+      writeFileSync(join(saida, 'index.html'), limpar(base))
       writeFileSync(join(saida, 'sitemap.xml'), sitemap())
       writeFileSync(join(saida, 'robots.txt'), ROBOTS)
       writeFileSync(join(saida, 'llms.txt'), llms())
