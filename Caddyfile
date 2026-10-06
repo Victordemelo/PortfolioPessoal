@@ -1,3 +1,22 @@
+# Cabeçalhos de segurança: usados nas respostas normais e também nas páginas de
+# erro (handle_errors começa uma resposta nova, sem os cabeçalhos de cima)
+(seguranca) {
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		# HTTPS por um ano (o navegador ignora em HTTP, então não atrapalha o dev local)
+		Strict-Transport-Security "max-age=31536000"
+		# connect-src: o site lê dados do GitHub no navegador (api.github.com e a
+		# API de contribuições do jogruber); cloudflareinsights = Web Analytics da
+		# Cloudflare, que ela injeta no HTML. 'unsafe-inline': o index.html tem
+		# script e style inline (tema sem flash, texto de SEO)
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.github.com https://github-contributions-api.jogruber.de https://cloudflareinsights.com; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+		-Server
+	}
+}
+
 # O Caddy só serve HTTP interno na porta 80 do container (SITE_ADDRESS=":80",
 # nunca o domínio). Em produção fica atrás do Nginx do servidor, que faz o
 # HTTPS com Certbot e repassa o Host original; por isso o redirect de www abaixo
@@ -10,13 +29,7 @@
 	@www header_regexp www Host ^www\.(.+)$
 	redir @www https://{re.www.1}{uri} permanent
 
-	header {
-		X-Content-Type-Options nosniff
-		Referrer-Policy strict-origin-when-cross-origin
-		X-Frame-Options DENY
-		Permissions-Policy "camera=(), microphone=(), geolocation=()"
-		-Server
-	}
+	import seguranca
 
 	# Arquivos com hash no nome podem ficar em cache para sempre
 	@assets path /assets/*
@@ -46,6 +59,7 @@
 	file_server
 
 	handle_errors 404 {
+		import seguranca
 		rewrite * /index.html
 		file_server
 	}

@@ -87,7 +87,7 @@ Regras do container para conviver com o servidor:
 ## Segurança e privacidade
 
 - Sem formulário e sem backend: o contato é por link do WhatsApp (`wa.me` com mensagem pronta) e `mailto:`, então não há endpoint para abusar.
-- Cabeçalhos no Caddy: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`.
+- Cabeçalhos no Caddy: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`, HSTS e CSP. Quem chama um domínio novo no navegador (API, script, analytics) precisa entrar na CSP do `Caddyfile`, senão o navegador bloqueia.
 - Projetos da empresa não entram no portfólio; a categoria "Profissional" só aparece quando houver projeto nela.
 
 ## O que revisitar se crescer
