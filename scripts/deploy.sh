@@ -44,4 +44,24 @@ done
 echo "==> Limpando imagens antigas"
 docker image prune -f >/dev/null
 
+# A Cloudflare guarda o HTML por 5 min (regra de cache da zona): limpa para a
+# versão nova aparecer na hora. Falhar aqui não desfaz o deploy, só avisa.
+# /etc/cloudflare/token (fora do Git): CF_API_TOKEN (permissão Cache Purge) e CF_ZONE_ID
+echo "==> Limpando o cache da Cloudflare"
+if [[ -r /etc/cloudflare/token ]]; then
+  # shellcheck disable=SC1091
+  . /etc/cloudflare/token
+  resposta=$(curl -sS -m 20 -X POST \
+    -H "Authorization: Bearer ${CF_API_TOKEN}" -H "Content-Type: application/json" \
+    --data '{"purge_everything":true}' \
+    "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/purge_cache" || true)
+  if [[ "$resposta" =~ \"success\":\ ?true ]]; then
+    echo "    ok"
+  else
+    echo "    não consegui limpar; a versão nova aparece em até 5 min" >&2
+  fi
+else
+  echo "    sem /etc/cloudflare/token; a versão nova aparece em até 5 min"
+fi
+
 echo "==> Deploy concluído"

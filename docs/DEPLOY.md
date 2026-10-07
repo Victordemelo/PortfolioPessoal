@@ -3,7 +3,7 @@
 A cada push na `main`, o workflow [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml):
 
 1. **Build**: `npm ci` e `npm run build`. Se o TypeScript ou o Vite falharem, nada vai para o servidor.
-2. **Deploy**: entra no servidor por SSH e roda [`scripts/deploy.sh`](../scripts/deploy.sh), que faz `git merge --ff-only origin/main`, `docker compose up -d --build`, confere `http://127.0.0.1:8080` e limpa imagens antigas.
+2. **Deploy**: entra no servidor por SSH e roda [`scripts/deploy.sh`](../scripts/deploy.sh), que faz `git merge --ff-only origin/main`, `docker compose up -d --build`, confere `http://127.0.0.1:8080`, limpa imagens antigas e limpa o cache da Cloudflare (o HTML fica 5 min em cache na borda; o token com permissão só de Cache Purge e o ID da zona ficam em `/etc/cloudflare/token` no servidor, fora do Git).
 3. **Conferência**: espera `https://victordemelo.com.br` responder 200.
 
 Também dá para disparar na mão: aba **Actions → Deploy → Run workflow**.
