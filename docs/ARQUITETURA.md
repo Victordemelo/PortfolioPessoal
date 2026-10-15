@@ -88,6 +88,7 @@ Regras do container para conviver com o servidor:
 
 - Sem formulário e sem backend: o contato é por link do WhatsApp (`wa.me` com mensagem pronta) e `mailto:`, então não há endpoint para abusar.
 - Cabeçalhos no Caddy: `nosniff`, `X-Frame-Options DENY`, `Referrer-Policy`, `Permissions-Policy`, HSTS e CSP. Quem chama um domínio novo no navegador (API, script, analytics) precisa entrar na CSP do `Caddyfile`, senão o navegador bloqueia.
+- Container endurecido no `docker-compose.yml`: sistema de arquivos só de leitura (grava só em `/data`, `/config` e `/tmp`), sem permissões especiais do Linux além de abrir a porta 80, sem ganho de privilégio e com teto de 256 MB de memória. Se o Caddy passar a precisar gravar em outra pasta, ela entra como volume ou `tmpfs`.
 - Projetos da empresa não entram no portfólio; a categoria "Profissional" só aparece quando houver projeto nela.
 
 ## O que revisitar se crescer
