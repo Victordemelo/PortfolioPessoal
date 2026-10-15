@@ -26,6 +26,8 @@ services:
     security_opt:
       - no-new-privileges:true
     mem_limit: 256m
+    # Teto de processador: o servidor é dividido com outros sites e clientes
+    cpus: 0.5
 
 volumes:
   caddy_data:
