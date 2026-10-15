@@ -115,8 +115,8 @@ export function QuandoProjeto({ p, pushes }: { p: Projeto; pushes: Record<string
 
 function LinhaProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string> }) {
   return (
-    <li>
-      <a href={`/projetos/${p.id}`} className="group grid items-start gap-4 border-b border-linha py-5 sm:grid-cols-[184px_1fr] sm:gap-6">
+    <li className="border-b border-linha py-5">
+      <a href={`/projetos/${p.id}`} className="group grid items-start gap-4 sm:grid-cols-[184px_1fr] sm:gap-6">
         <div className="h-fit self-start overflow-hidden rounded-md border border-linha transition group-hover:border-destaque/60">
           {p.imagem ? (
             <img src={p.imagemPequena ?? p.imagem} alt="" loading="lazy" decoding="async" width={480} height={300} className="foto-pb aspect-[16/10] w-full object-cover" />
@@ -145,6 +145,19 @@ function LinhaProjeto({ p, pushes }: { p: Projeto; pushes: Record<string, string
           </ul>
         </div>
       </a>
+      {/* fora do <a> do card: link dentro de link não é HTML válido */}
+      {p.noAr && (
+        <a
+          href={p.noAr}
+          target="_blank"
+          rel="noopener"
+          className="mt-3 inline-flex max-w-full items-center gap-2 rounded-md border border-linha px-2.5 py-1 font-mono text-xs text-suave transition hover:border-destaque hover:text-destaque sm:ml-[208px]"
+        >
+          <span className="size-1.5 shrink-0 rounded-full bg-vivo" />
+          <span className="truncate">no ar · {new URL(p.noAr).host}</span>
+          <ArrowUpRight size={13} className="shrink-0" />
+        </a>
+      )}
     </li>
   )
 }

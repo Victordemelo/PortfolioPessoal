@@ -23,7 +23,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
   const ultima = ultimaAtividade(p, useUltimosPushes())
 
   const links = [
-    p.noAr && { href: p.noAr, rotulo: 'Acessar o site', icone: <ArrowUpRight size={16} /> },
+    p.noAr && { href: p.noAr, rotulo: 'Acessar o app', icone: <ArrowUpRight size={16} /> },
     p.repo && { href: p.repo, rotulo: 'Código no GitHub', icone: <GithubIcon size={16} /> },
     p.extra && { href: p.extra.url, rotulo: p.extra.rotulo, icone: <ArrowUpRight size={16} /> },
   ].filter(Boolean) as { href: string; rotulo: string; icone: ReactNode }[]
@@ -35,6 +35,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
           ['categoria', grupo?.titulo ?? ''],
           ['início', mesAno(p.inicio)],
           ['última atividade', ultima ? dataCurta(ultima) : 'em andamento'],
+          ...(p.noAr ? [['status', 'no ar']] : []),
           ['código', p.repo ? 'público' : 'privado'],
         ]
       : [
@@ -111,7 +112,7 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
                 <a
                   href={l.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener"
                   className="flex items-center justify-between rounded-md border border-linha px-3 py-2 text-sm transition hover:border-destaque hover:text-destaque"
                 >
                   {l.rotulo}

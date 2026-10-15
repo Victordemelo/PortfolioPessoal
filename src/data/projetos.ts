@@ -97,6 +97,7 @@ export const projetos: Projeto[] = [
     fim: 'atual',
     ultimaAtividade: '2026-09-17',
     repo: `${GH}/StabilMoney`,
+    noAr: 'https://stabilmoney.victordemelo.com.br',
     resumo:
       'App de finanças para a família toda: receitas, despesas, cartões, contas fixas, metas e investimentos. Separa o dinheiro que está na conta do que já está comprometido, e não deixa gastar o que não existe.',
     destaques: [

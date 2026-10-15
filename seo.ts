@@ -95,7 +95,7 @@ function paginaInicial(): Pagina {
       .map(
         (g) => `<h3>${esc(g.titulo)}</h3><ul>${projetosOrdenados
           .filter((p) => p.categoria === g.id)
-          .map((p) => `<li><a href="/projetos/${p.id}">${esc(p.nome)}</a>: ${esc(p.resumo)}</li>`)
+          .map((p) => `<li><a href="/projetos/${p.id}">${esc(p.nome)}</a>: ${esc(p.resumo)}${p.noAr ? ` <a href="${p.noAr}" rel="noopener">No ar: ${new URL(p.noAr).host}</a>` : ''}</li>`)
           .join('')}</ul>`,
       )
       .join('')}
@@ -132,6 +132,7 @@ function paginaProjeto(p: Projeto): Pagina {
     <ul>${p.destaques.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
     <h2>Stack</h2>
     <p>${p.stack.map(esc).join(', ')}</p>
+    ${p.noAr ? `<p><a href="${p.noAr}" rel="noopener">Acessar o app: ${new URL(p.noAr).host}</a></p>` : ''}
     ${p.repo ? `<p><a href="${p.repo}">Código no GitHub</a></p>` : ''}
     ${p.extra ? `<p><a href="${esc(p.extra.url)}">${esc(p.extra.rotulo)}</a></p>` : ''}
     <p>Projeto de <a href="/">${esc(perfil.nome)}</a>.</p>
@@ -151,6 +152,12 @@ function paginaProjeto(p: Projeto): Pagina {
       author: pessoa,
       ...(p.repo ? { codeRepository: p.repo, programmingLanguage: p.stack } : { keywords: p.stack.join(', ') }),
       ...(p.imagem ? { image: `${SITE}${p.imagem}` } : {}),
+      // o app publicado: buscadores ligam o código (ou a obra) ao produto no ar
+      ...(p.noAr
+        ? p.repo
+          ? { targetProduct: { '@type': 'WebApplication', name: p.nome, url: p.noAr, operatingSystem: 'Web', applicationCategory: 'WebApplication' } }
+          : { sameAs: p.noAr }
+        : {}),
     },
   }
 }
@@ -192,7 +199,7 @@ const ROBOTS = `User-agent: *\nAllow: /\n\n${ROBOS_IA.map((r) => `User-agent: ${
 
 // llms.txt (llmstxt.org): um resumo em Markdown para modelos de linguagem lerem sem JS
 function llms() {
-  const linha = (p: Projeto) => `- [${p.nome}](${SITE}/projetos/${p.id}): ${p.resumo}${p.repo ? ` Código: ${p.repo}` : ''}`
+  const linha = (p: Projeto) => `- [${p.nome}](${SITE}/projetos/${p.id}): ${p.resumo}${p.noAr ? ` No ar: ${p.noAr}` : ''}${p.repo ? ` Código: ${p.repo}` : ''}`
   return `# ${perfil.nome}
 
 > ${DESCRICAO}
