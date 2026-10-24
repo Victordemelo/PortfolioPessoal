@@ -238,10 +238,10 @@ function RemoteWake({ interativo }: { interativo: boolean }) {
   )
 }
 
-// ─── StabilMoney: ícone do app + os "bolsos" variando ─────────────────
+// ─── Stabil Money: ícone do app + os "bolsos" variando ─────────────────
 function StabilMoney() {
   return (
-    <Moldura rotulo="Capa do StabilMoney: ícone do app e o saldo dividido em bruto, reservado e disponível">
+    <Moldura rotulo="Capa do Stabil Money: ícone do app e o saldo dividido em bruto, reservado e disponível">
       <g className="sm-icone">
         <rect x="46" y="58" width="108" height="108" rx="24" fill="#0f3d2c" />
         <svg x="58" y="70" width="84" height="84" viewBox="150 145 725 715">

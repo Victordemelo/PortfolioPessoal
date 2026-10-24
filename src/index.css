@@ -254,7 +254,7 @@ button:not(:disabled),
 .rw-toque-1x { pointer-events: none; transform-box: fill-box; transform-origin: center; opacity: 0; animation: rw-toque-1x 0.6s ease-out forwards; }
 .rw-cursor { animation: rw-cursor 0.9s steps(1) infinite; }
 
-/* StabilMoney: o reservado cresce, o disponível encolhe na mesma medida */
+/* Stabil Money: o reservado cresce, o disponível encolhe na mesma medida */
 /* bruto, reservado e disponível mudam juntos, com os mesmos tempos e a mesma
    curva, então disponível = bruto − reservado vale em todo instante */
 @keyframes sm-bruto {

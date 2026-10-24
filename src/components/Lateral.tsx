@@ -79,6 +79,7 @@ function Social({ href, rotulo, children }: { href: string; rotulo: string; chil
 export function secoesDoProjeto(p: Projeto) {
   return [
     { id: 'visao', rotulo: 'Visão geral' },
+    ...p.texto.map((s) => ({ id: s.id, rotulo: s.titulo })),
     { id: 'destaques', rotulo: 'Destaques' },
     { id: 'stack-projeto', rotulo: 'Stack' },
     ...(p.repo || p.noAr || p.extra ? [{ id: 'links', rotulo: 'Links' }] : []),

@@ -85,6 +85,16 @@ export function PaginaProjeto({ p }: { p: Projeto }) {
         ))}
       </dl>
 
+      {p.texto.map((s) => (
+        <Bloco key={s.id} id={s.id} titulo={s.titulo}>
+          <div className="max-w-2xl space-y-4 leading-relaxed text-suave">
+            {s.paragrafos.map((t) => (
+              <p key={t.slice(0, 40)}>{t}</p>
+            ))}
+          </div>
+        </Bloco>
+      ))}
+
       <Bloco id="destaques" titulo={`Destaques · ${p.destaques.length}`}>
         <ul className="space-y-3 leading-relaxed">
           {p.destaques.map((d) => (

@@ -52,7 +52,7 @@ function Sobre() {
     { v: String(projetos.length), r: 'projetos no portfólio' },
     { v: String(projetos.filter((p) => p.fim === 'atual').length), r: 'em andamento agora' },
     { v: dados ? dados.total.toLocaleString('pt-BR') : '—', r: 'contribuições em 12 meses' },
-    { v: '700+', r: 'testes no StabilMoney' },
+    { v: '700+', r: 'testes no Stabil Money' },
   ]
   return (
     <Secao id="sobre" titulo="Sobre">

@@ -66,7 +66,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = projeto ? `${projeto.nome} · ${perfil.nome}` : `${perfil.nome} · ${perfil.titulo}`
+    document.title = projeto ? `${projeto.seo.titulo} · ${perfil.nome}` : `${perfil.nome} · ${perfil.titulo}`
     const saindoDeProjeto = estavaEmProjeto.current && !projeto
     estavaEmProjeto.current = !!projeto
     if (projeto) {

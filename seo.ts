@@ -128,6 +128,7 @@ function paginaProjeto(p: Projeto): Pagina {
     <h1>${esc(p.nome)}</h1>
     ${p.contexto ? `<p>${esc(p.contexto)}</p>` : ''}
     <p>${esc(p.resumo)}</p>
+    ${p.texto.map((s) => `<h2>${esc(s.titulo)}</h2>${s.paragrafos.map((t) => `<p>${esc(t)}</p>`).join('')}`).join('')}
     <h2>Destaques</h2>
     <ul>${p.destaques.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
     <h2>Stack</h2>
@@ -139,14 +140,15 @@ function paginaProjeto(p: Projeto): Pagina {
   </div>`
   return {
     caminho: `/projetos/${p.id}`,
-    titulo: `${p.nome} · ${perfil.nome}`,
-    descricao: p.resumo,
+    titulo: `${p.seo.titulo} · ${perfil.nome}`,
+    descricao: p.seo.descricao,
     tipo: 'article',
     corpo,
     jsonld: {
       '@type': p.repo ? 'SoftwareSourceCode' : 'CreativeWork',
       name: p.nome,
-      description: p.resumo,
+      headline: p.seo.titulo,
+      description: p.seo.descricao,
       url: `${SITE}/projetos/${p.id}`,
       inLanguage: 'pt-BR',
       author: pessoa,
